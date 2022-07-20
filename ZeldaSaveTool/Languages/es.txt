@@ -1,0 +1,15 @@
+﻿[Zelda Save Tool Translation File - español]
+Title=Convertidor de guardados de Ocarina of Time para PC
+Drop_It=Arrastre su archivo de guardado aquí
+Version=Versión: {0}
+Open_Filter=Archivos SRA (*.sra)|*.sra|Todos los archivos (*.*)|*.*
+Save_Filter=Archivo de guardado de PC Port|*.sav
+Save_As_Title=Guardar "{0}" convertido como
+I=Información
+W=Aviso
+E=Error
+Exception=Mensaje de excepción: {0}
+Select_One=¡Seleccione sólo un archivo de guardado para convertir!
+Invalid=¡El formato de archivo no es válido!
+Wrong_Size=¡Tamaño de archivo no válido! Asegúrese de que el archivo es un archivo de guardado válido.
+OOOT_Size=¡Este archivo puede que sea un archivo de guardado de Open Ocarina!

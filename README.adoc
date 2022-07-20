@@ -1,0 +1,68 @@
+:proj-name: Zelda Save Tool
+:proj-handle: ZeldaSaveTool
+:proj-desc: Ocarina of Time PC Port Save Converter
+:proj-repo: xoascf/{proj-handle}
+:!showtitle:
+:icons: font
+:!toc-title:
+:uri-gh: https://github.com
+:uri-repo: {uri-gh}/{proj-repo}
+:uri-licence: {uri-repo}/blob/master/LICENSE
+:uri-ci: {uri-repo}/actions/workflows/build.yml
+:uri-shields: https://img.shields.io
+:img-licence-badge: {uri-shields}/github/license/{proj-repo}.svg?label=Licence
+:img-ci-badge: {uri-shields}/github/workflow/status/{proj-repo}/CI/master.svg?label=Build
+
+= {proj-name}
+
+ifdef::env-github[]
+[subs=attributes+]
+++++
+<div align="center">
+   <h1>{proj-name}</h1>
+   <h3>{proj-desc}</h3>
+   <br />
+</div>
+<p align="center">
+  <a href="{uri-licence}">
+    <img src="{img-licence-badge}" />
+  </a>
+  <a href="{uri-ci}">
+    <img src="{img-ci-badge}" />
+  </a>
+</p>
+++++
+endif::[]
+
+ifndef::env-github[]
+
+[.text-center]
+[.lead]
+*{proj-name}*
+
+[.text-center]
+{proj-desc}
+
+[.text-center]
+image:{img-licence-badge}[Licence, align=center, link="{uri-licence}"]
+image:{img-ci-badge}[Build Status (GitHub Actions), align=center, link="{uri-ci}"]
+endif::[]
+
+Drop your save file into the program window, and specify where to save the converted save file.
+
+== How it works
+The program determines the byte order of the save file and converts it to Big Endian format if necessary, it also changes the byte order of some values for the PC port.
+
+== Notes
+This program is experimental, and may not keep some elements of certain dungeons when converting saves, please report any related problems by {uri-repo}/issues/new/choose[submitting an issue^].
+
+Console memory dumps and emulator memory dumps (PJ, ZIP) are not yet supported.
+
+Supported files:
+Emulator save files (.sra) of any version of the NTSC-U and PAL releases of the original game.
+
+Export format:
+.sav for {uri-gh}/blawar/ooot[Open Ocarina^] and {uri-gh}/HarbourMasters/Shipwright[Ship of Harkinian^].
+
+== Requirements
+*.NET 6.0.6*: https://dotnet.microsoft.com/download/dotnet/6.0/runtime

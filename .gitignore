@@ -1,0 +1,10 @@
+﻿*.pfx
+*.user
+*.suo
+Debug/
+Release/
+bin/
+obj/
+packages/
+.vs/
+.vscode/
