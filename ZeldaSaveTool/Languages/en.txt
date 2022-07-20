@@ -3,7 +3,6 @@ Title=Ocarina of Time PC Port Save Converter
 Drop_It=Drop your save file here
 Version=Version: {0}
 Open_Filter=SRA files (*.sra)|*.sra|All files (*.*)|*.*
-Save_Filter=PC Port Save File|*.sav
 Save_As_Title=Save converted "{0}" as
 I=Information
 W=Warning

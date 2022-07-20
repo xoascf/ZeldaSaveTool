@@ -71,7 +71,7 @@ internal static class Program
 
 		savDlg.Title = _("Save_As_Title", _srcSaveName);
 		savDlg.FileName = "oot";
-		savDlg.Filter = _("Save_Filter");
+		savDlg.Filter = "PC Port Save File|*.sav";
 
 		if (savDlg.ShowDialog() != DialogResult.OK)
 			return;

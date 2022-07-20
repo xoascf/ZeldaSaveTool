@@ -3,7 +3,6 @@ Title=Convertidor de guardados de Ocarina of Time para PC
 Drop_It=Arrastre su archivo de guardado aquí
 Version=Versión: {0}
 Open_Filter=Archivos SRA (*.sra)|*.sra|Todos los archivos (*.*)|*.*
-Save_Filter=Archivo de guardado de PC Port|*.sav
 Save_As_Title=Guardar "{0}" convertido como
 I=Información
 W=Aviso
