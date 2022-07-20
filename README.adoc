@@ -54,7 +54,7 @@ Drop your save file into the program window, and specify where to save the conve
 The program determines the byte order of the save file and converts it to Big Endian format if necessary, it also changes the byte order of some values for the PC port.
 
 == Notes
-This program is experimental, and may not keep some elements of certain dungeons when converting saves, please report any related problems by {uri-repo}/issues/new/choose[submitting an issue^].
+This program is experimental, and may not keep some items or progress of certain dungeons when converting saves, please report any related problems by {uri-repo}/issues/new/choose[submitting an issue^].
 
 Console memory dumps and emulator memory dumps (PJ, ZIP) are not yet supported.
 
