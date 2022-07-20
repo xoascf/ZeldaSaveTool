@@ -5,6 +5,7 @@ on:
     paths-ignore: ["**.adoc"]
   pull_request:
     paths-ignore: ["**.adoc"]
+  workflow_dispatch:
 jobs:
   build:
     runs-on: windows-2022
