@@ -1,8 +1,13 @@
 ﻿[Zelda Save Tool Translation File - English]
-Title=Ocarina of Time PC Port Save Converter
+Title=OoT Save Converter
 Drop_It=Drop your save file here
-Version=Version: {0}
-Open_Filter=SRA files (*.sra)|*.sra|All files (*.*)|*.*
+Supported=Supported formats: {0}
+Version=Version {0}
+Open_First=Open a save file first!
+Supported_Filter=All Supported Files|*.sra;*.sav
+SRA_Filter=SRA Files (*.sra)|*.sra
+PC_Filter=PC Port Save Files (*.sav)|*.sav
+All_Filter=All Files (*.*)|*.*
 Save_As_Title=Save converted "{0}" as
 I=Information
 W=Warning
@@ -10,5 +15,19 @@ E=Error
 Exception=Exception message: {0}
 Select_One=Select only one save file to convert!
 Invalid=File format is not valid!
-Wrong_Size=Invalid file size! Make sure the file is a valid save file.
-OOOT_Size=This file may be an Open Ocarina save file!
+Wrong_Size=Invalid file size!\nMake sure the file is a valid save file.
+File_1=File 1
+File_2=File 2
+File_3=File 3
+Format=Format: {0}
+Convert_To=Convert to:
+Region=Region:
+Quest=Quest:
+Convert_Now=Convert and save...
+N64Save=N64 Save
+PcPortSav=PC Port Save
+Not_Now=Not available
+Sound=Sound:
+
+
+Z_Targeting=Z Targeting:

@@ -1,0 +1,35 @@
+﻿[Zelda Save Tool Translation File - Deutsch]
+Title=OoT Savegame-Konverter
+Drop_It=Legen Sie Ihre Speicherdatei hier ab
+Supported=Unterstützte Formate: {0}
+Version=Version {0}
+Open_First=Öffne zuerst eine Spielstandsdatei!
+Supported_Filter=Alle unterstützten Dateien|*.sra;*.sav
+SRA_Filter=SRA-Dateien (*.sra)|*.sra
+PC_Filter=PC-Port-Speicherdateien (*.sav)|*.sav
+All_Filter=Alle Dateien (*.*)|*.*
+Save_As_Title=Speichere konvertiert "{0}" als
+I=Information
+W=Warnung
+E=Fehler
+Exception=Ausnahmemeldung: {0}
+Select_One=Wählen Sie nur eine zu konvertierende Speicherdatei aus!
+Invalid=Das Dateiformat ist nicht gültig!
+Wrong_Size=Ungültige Dateigröße!\nStellen Sie sicher, dass die Datei eine gültige Speicherdatei ist.
+File_1=Datei 1
+File_2=Datei 2
+File_3=Datei 3
+Format=Format: {0}
+Convert_To=Konvertieren in:
+Region=Region:
+Quest=Quest:
+Convert_Now=Konvertieren und speichern...
+N64Save=N64 Spielstand
+PcPortSav=PC-Port Spielstand
+Not_Now=Nicht verfügbar
+Sound=Sound:
+
+Headset=Kopfhörer
+Z_Targeting=Zielen (Z-Trigger):
+Switch=Einmal
+Hold=Halten

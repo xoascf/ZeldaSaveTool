@@ -6,11 +6,11 @@
     <LangVersion>10</LangVersion>
     <Nullable>enable</Nullable>
     <UseWindowsForms>True</UseWindowsForms>
-    <Description>Convert your emulator save file for use in PC Port!</Description>
+    <Description>Convert and edit basic game save file information</Description>
     <Copyright>Amaro Martínez</Copyright>
     <ImplicitUsings>disable</ImplicitUsings>
     <PlatformTarget>AnyCPU</PlatformTarget>
-    <ApplicationManifest>Program.manifest</ApplicationManifest>
+    <ApplicationManifest>Properties/Program.manifest</ApplicationManifest>
     <StartupObject>ZeldaSaveTool.Program</StartupObject>
     <RepositoryUrl>https://github.com/xoascf/ZeldaSaveTool</RepositoryUrl>
   </PropertyGroup>
@@ -21,9 +21,32 @@
   </PropertyGroup>
 
   <PropertyGroup>
-    <GenerateAssemblyFileVersionAttribute>False</GenerateAssemblyFileVersionAttribute>
+    <GenerateAssemblyTitleAttribute>False</GenerateAssemblyTitleAttribute>
+    <GenerateAssemblyCompanyAttribute>False</GenerateAssemblyCompanyAttribute>
+    <GenerateAssemblyProductAttribute>False</GenerateAssemblyProductAttribute>
     <GenerateAssemblyVersionAttribute>False</GenerateAssemblyVersionAttribute>
+    <GenerateAssemblyFileVersionAttribute>False</GenerateAssemblyFileVersionAttribute>
     <GenerateAssemblyInformationalVersionAttribute>False</GenerateAssemblyInformationalVersionAttribute>
-  </PropertyGroup> 
+    <ApplicationIcon>Icon.ico</ApplicationIcon>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Content Include="Icon.ico" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Update="Properties\Resources.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Update="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup> 
 
 </Project>

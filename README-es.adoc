@@ -1,0 +1,67 @@
+:proj-name: Zelda Save Tool
+:proj-handle: ZeldaSaveTool
+:proj-desc: Conversor de guardados de OoT para PC Port
+:proj-logo: ./Logo.svg
+:proj-repo: xoascf/{proj-handle}
+:!showtitle:
+:icons: font
+:!toc-title:
+:uri-gh: https://github.com
+:uri-repo: {uri-gh}/{proj-repo}
+:uri-licence: {uri-repo}/blob/master/LICENSE
+:uri-ci: {uri-repo}/actions/workflows/build.yml
+:uri-shields: https://img.shields.io
+:img-licence-badge: {uri-shields}/github/license/{proj-repo}.svg?label=Licencia
+:img-ci-badge: {uri-shields}/github/actions/workflow/status/{proj-repo}/build.yml?label=Estado de compilación
+
+= {proj-name}
+
+ifdef::env-github[]
+[subs=attributes+]
+++++
+<div align="center">
+   <a href="{uri-repo}"> <img src="{proj-logo}" width="256" height="256"></a>
+   <h1>{proj-name}</h1>
+   <h3>{proj-desc}</h3>
+   <br />
+</div>
+<p align="center">
+  <a href="{uri-licence}">
+    <img src="{img-licence-badge}" />
+  </a>
+  <a href="{url-ci}">
+    <img src="{img-ci-badge}" />
+  </a>
+</p>
+++++
+endif::[]
+
+ifndef::env-github[]
+image::{proj-logo}[{proj-name}, align=center, link="{uri-repo}"]
+
+[.text-center]
+[.lead]
+*{proj-name}*
+
+[.text-center]
+{proj-desc}
+
+[.text-center]
+image:{img-licence-badge}[Licencia, align=center, link="{uri-licence}"]
+image:{img-ci-badge}[Estado de compilación (GitHub Actions), align=center, link="{url-ci}"]
+endif::[]
+
+Arrastre su guardado a la ventana del programa y especifique dónde guardar el archivo convertido.
+
+== Cómo funciona
+{proj-name} determina el orden de los bytes del archivo de guardado, corrige el nombre para que pueda ser exportado para NTSC o PAL y lo convierte al formato especificado para PC Port, emulador, etc.
+
+== Notas
+Este programa es todavía experimental, y puede que no conserve algunos objetos o el progreso de ciertas mazmorras al convertir los guardados, {uri-repo}/issues/new/choose[informe de cualquier problema relacionado^].
+
+.Formatos compatibles:
+* Archivos de guardado de emulador (*.sra) de cualquier versión del juego original NTSC y PAL.
+* Archivos de guardado de PC Port (*.sav) para {uri-gh}/blawar/ooot[Open Ocarina^] (oot.sav) y {uri-gh}/HarbourMasters/Shipwright[Ship of Harkinian^] (oot_save.sav).
+
+== Requisitos
+*.NET 6.0.18*: https://dotnet.microsoft.com/download/dotnet/6.0/runtime

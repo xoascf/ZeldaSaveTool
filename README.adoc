@@ -1,6 +1,7 @@
 :proj-name: Zelda Save Tool
 :proj-handle: ZeldaSaveTool
-:proj-desc: Ocarina of Time PC Port Save Converter
+:proj-desc: OoT PC Port Save Converter
+:proj-logo: ./Logo.svg
 :proj-repo: xoascf/{proj-handle}
 :!showtitle:
 :icons: font
@@ -11,7 +12,7 @@
 :uri-ci: {uri-repo}/actions/workflows/build.yml
 :uri-shields: https://img.shields.io
 :img-licence-badge: {uri-shields}/github/license/{proj-repo}.svg?label=Licence
-:img-ci-badge: {uri-shields}/github/workflow/status/{proj-repo}/CI/master.svg?label=Build
+:img-ci-badge: {uri-shields}/github/actions/workflow/status/{proj-repo}/build.yml?label=Build
 
 = {proj-name}
 
@@ -19,6 +20,7 @@ ifdef::env-github[]
 [subs=attributes+]
 ++++
 <div align="center">
+   <a href="{uri-repo}"> <img src="{proj-logo}" width="256" height="256"></a>
    <h1>{proj-name}</h1>
    <h3>{proj-desc}</h3>
    <br />
@@ -35,6 +37,7 @@ ifdef::env-github[]
 endif::[]
 
 ifndef::env-github[]
+image::{proj-logo}[{proj-name}, align=center, link="{uri-repo}"]
 
 [.text-center]
 [.lead]
@@ -48,21 +51,17 @@ image:{img-licence-badge}[Licence, align=center, link="{uri-licence}"]
 image:{img-ci-badge}[Build Status (GitHub Actions), align=center, link="{uri-ci}"]
 endif::[]
 
-Drop your save file into the program window, and specify where to save the converted save file.
+Drop your save file into the program window and specify where to save the converted file.
 
 == How it works
-The program determines the byte order of the save file and converts it to Big Endian format if necessary, it also changes the byte order of some values for the PC port.
+{proj-name} determines the byte order of the save file, corrects the name so that it can be exported for NTSC or PAL and converts it to the specified format for the PC Port, emulator, etc.
 
 == Notes
-This program is experimental, and may not keep some items or progress of certain dungeons when converting saves, please report any related problems by {uri-repo}/issues/new/choose[submitting an issue^].
+This program is still experimental, and may not keep some items or progress of certain dungeons when converting saves, please report any related problems by {uri-repo}/issues/new/choose[submitting an issue^].
 
-Console memory dumps and emulator memory dumps (PJ, ZIP) are not yet supported.
-
-Supported files:
-Emulator save files (.sra) of any version of the NTSC-U and PAL releases of the original game.
-
-Export format:
-.sav for {uri-gh}/blawar/ooot[Open Ocarina^] and {uri-gh}/HarbourMasters/Shipwright[Ship of Harkinian^].
+.Supported formats:
+* Emulator save files (*.sra) from any version of the NTSC and PAL releases of the original game.
+* PC Port save files (*.sav) for {uri-gh}/blawar/ooot[Open Ocarina^] (oot.sav) and {uri-gh}/HarbourMasters/Shipwright[Ship of Harkinian^] (oot_save.sav).
 
 == Requirements
-*.NET 6.0.6*: https://dotnet.microsoft.com/download/dotnet/6.0/runtime
+*.NET 6.0.18*: https://dotnet.microsoft.com/download/dotnet/6.0/runtime

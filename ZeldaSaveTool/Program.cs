@@ -1,20 +1,22 @@
 /* Licensed under the Open Software License version 3.0 */
 
+using ZeldaSaveTool.Save;
+using ZeldaSaveTool.Utility;
+
 namespace ZeldaSaveTool;
 
-internal static class Program
-{
+internal static class Program {
 	public static BackgroundWorker Worker = new();
+	public static Save.File? SaveFileInst;
 
-	private static byte[]? _portSaveData;
-	private static string? _srcSaveName;
+	private static string _srcSaveName = "";
+	public static byte[] OutSaveData = Zero;
 
 	/// <summary>
 	/// The main entry point for the application.
 	/// </summary>
 	[STAThread]
-	private static void Main()
-	{
+	private static void Main() {
 		Worker.DoWork += Worker_DoWork;
 		Worker.RunWorkerCompleted += Worker_RunWorkerCompleted;
 
@@ -29,60 +31,58 @@ internal static class Program
 		Application.Run(new ToolForm());
 	}
 
-	private static void CheckAndWork(string[]? files)
-	{
-		_portSaveData = null;
+	private static void CheckAndWork(string[]? files) {
+		_srcSaveName = "";
+		OutSaveData = Zero;
 
-		_srcSaveName = null;
+		if (files is { Length: 1 }) {
+			string saveFilePath = files[0];
+			try {
+				SaveFileInst = new(saveFilePath);
 
-		if (files is { Length: 1 })
-		{
-			var saveFilePath = files[0];
-			try
-			{
-				if (!SaveFile.Validate(saveFilePath))
-					return;
-
-				_portSaveData = SaveFile.ToPcPortSave(saveFilePath);
-				_srcSaveName = Path.GetFileName(saveFilePath);
+				if (SaveFileInst.ValidSave)
+					_srcSaveName = IO.BaseName(saveFilePath);
+				else
+					SaveFileInst = null;
 			}
-			catch (IOException ex)
-			{
+			catch (Exception ex) {
 				Message.Exception(ex);
 			}
 		}
 		else
-			Message.New
-				(Message.Level.E, _("Select_One"));
+			Message.New(Message.Level.E, T("Select_One"));
 	}
 
-	private static void Worker_DoWork(object? sender, DoWorkEventArgs e)
-	{
+	private static void Worker_DoWork(object? sender, DoWorkEventArgs e) {
 		CheckAndWork(e.Argument as string[]);
 	}
 
-	private static void Worker_RunWorkerCompleted
-		(object? sender, RunWorkerCompletedEventArgs e)
-	{
-		if (_portSaveData == null || _srcSaveName == null)
+	public static void SaveNewSaveFile() {
+		if (OutSaveData == Zero)
 			return;
 
+		const string sraFn = "THE LEGEND OF ZELDA";
+		const string sohFn = "oot_save";
+		string sraFf = T("SRA_Filter") + "|" + T("All_Filter");
+		string pcFf = T("PC_Filter") + "|" + T("All_Filter");
+		bool isSavingForN64 = SaveFileInst?.FormatExport == File.Format.N64Save;
 		using SaveFileDialog savDlg = new();
-
-		savDlg.Title = _("Save_As_Title", _srcSaveName);
-		savDlg.FileName = "oot";
-		savDlg.Filter = "PC Port Save File|*.sav";
+		savDlg.Title = T("Save_As_Title", _srcSaveName);
+		savDlg.FileName = isSavingForN64 ? sraFn : sohFn;
+		savDlg.Filter = isSavingForN64 ? sraFf : pcFf;
 
 		if (savDlg.ShowDialog() != DialogResult.OK)
 			return;
 
-		try
-		{
-			Io.SaveToFile(_portSaveData, savDlg.FileName);
-		}
-		catch (IOException ex)
-		{
+		try {
+			IO.SaveToFile(OutSaveData, savDlg.FileName);
+		} catch (Exception ex) {
 			Message.Exception(ex);
 		}
+	}
+
+	private static void Worker_RunWorkerCompleted
+		(object? sender, RunWorkerCompletedEventArgs e) {
+		SaveNewSaveFile();
 	}
 }
