@@ -19,15 +19,18 @@ Wrong_Size=Invalid file size!\nMake sure the file is a valid save file.
 File_1=File 1
 File_2=File 2
 File_3=File 3
-Format=Format: {0}
-Convert_To=Convert to:
-Region=Region:
-Quest=Quest:
-Convert_Now=Convert and save...
+New_Format=New Format
+
+
+Save_As=Save As...
 N64Save=N64 Save
 PcPortSav=PC Port Save
-Not_Now=Not available
-Sound=Sound:
 
 
-Z_Targeting=Z Targeting:
+
+Z_Targeting=Z Targeting
+
+
+Is_Debug="Debug" version
+Hint_Access=(or double click)
+Hint_Format=({0})

@@ -19,17 +19,17 @@ Wrong_Size=Ungültige Dateigröße!\nStellen Sie sicher, dass die Datei eine gü
 File_1=Datei 1
 File_2=Datei 2
 File_3=Datei 3
-Format=Format: {0}
-Convert_To=Konvertieren in:
-Region=Region:
-Quest=Quest:
-Convert_Now=Konvertieren und speichern...
+New_Format=Neues Format
+
+
+Save_As=Speichern unter...
 N64Save=N64 Spielstand
 PcPortSav=PC-Port Spielstand
-Not_Now=Nicht verfügbar
-Sound=Sound:
+
 
 Headset=Kopfhörer
-Z_Targeting=Zielen (Z-Trigger):
+Z_Targeting=Zielen (Z-Trigger)
 Switch=Einmal
 Hold=Halten
+Is_Debug="Debug"-Version
+Hint_Access=(oder Doppelklick)

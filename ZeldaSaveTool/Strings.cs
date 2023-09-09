@@ -3,7 +3,7 @@
 namespace ZeldaSaveTool;
 
 internal class Strings {
-	public const string Ver = "0.5.5";
+	public const string Ver = "0.5.8";
 	public const string PVer = $"{Ver}b";
 	public const string PName = "Zelda Save Tool";
 
@@ -23,6 +23,7 @@ internal class Strings {
 			lang++;
 
 		LDict.Clear();
+		LoadDictionary(Language.en);
 		LoadDictionary(lang);
 	}
 
@@ -37,6 +38,7 @@ internal class Strings {
 		if (string.IsNullOrEmpty(lang))
 			lang = CultureInfo.CurrentUICulture.Parent.TwoLetterISOLanguageName;
 
+		LoadDictionary(Language.en);
 		LoadDictionary(GetLanguage(lang));
 	}
 
@@ -62,7 +64,7 @@ internal class Strings {
 
 				string[] keyAndValue = line.Split(new[] { '=' }, 2);
 
-				LDict.Add(keyAndValue[0], keyAndValue[1].Replace("\\n", "\n"));
+				LDict[keyAndValue[0]] = keyAndValue[1].Replace("\\n", "\n");
 			}
 		}
 

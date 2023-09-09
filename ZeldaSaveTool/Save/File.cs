@@ -5,7 +5,6 @@ using ZeldaSaveTool.Utility;
 namespace ZeldaSaveTool.Save;
 
 internal class File /* format */ {
-	// FIXME: Restore N64 Debug Format support of the first release (change BE for it)
 	public enum Format { N64Save, PcPortSav }
 	public enum Sound { Stereo, Mono, Headset, Surround }
 	public enum ZTargeting { Switch, Hold } // Target mode
@@ -14,6 +13,7 @@ internal class File /* format */ {
 	public Format? FormatExport { get; set; }
 	public bool OverwriteBackups { get; set; }
 	public bool ToNTSC { get; set; }
+	public bool AlternateChecksum { get; set; }
 	public bool ValidSave { get; set; }
 	public byte SoundMode { get; set; }
 	public byte ZTargetingMode { get; set; }
@@ -128,18 +128,21 @@ internal class File /* format */ {
 		_saveData.Set(0xCF + 0x28C0, Slot3.DoubleDefense ? 0x14 : 0x00);
 
 		if (FormatUsed == Format.N64Save && FormatExport == Format.PcPortSav
-		    || FormatUsed == Format.PcPortSav && FormatExport == Format.N64Save) {
+			|| FormatUsed == Format.PcPortSav && FormatExport == Format.N64Save) {
 			_saveData = FixBytePos(_saveData, 0);
 			_saveData = FixBytePos(_saveData, 0x1470 - 0x20);
 			_saveData = FixBytePos(_saveData, 0x28C0 - 0x20);
 		}
 
-		bool to = FormatExport != Format.PcPortSav;
+		bool to = !AlternateChecksum;
 
-		/* Update checksum (it should always do this) */
-		_saveData.Set(0x1352 + 0x20, ByteArray.FromU16(GetChecksum(_saveData, 0x20, to), to));
-		_saveData.Set(0x1352 + 0x1470, ByteArray.FromU16(GetChecksum(_saveData, 0x1470, to), to));
-		_saveData.Set(0x1352 + 0x28C0, ByteArray.FromU16(GetChecksum(_saveData, 0x28C0, to), to));
+        /* Update checksum */
+        _saveData.Set(0x1352 + 0x20,
+			ByteArray.FromU16(GetChecksum(_saveData, 0x20, to), to));
+		_saveData.Set(0x1352 + 0x1470,
+			ByteArray.FromU16(GetChecksum(_saveData, 0x1470, to), to));
+		_saveData.Set(0x1352 + 0x28C0,
+			ByteArray.FromU16(GetChecksum(_saveData, 0x28C0, to), to));
 
 		if (OverwriteBackups)
 			_saveData = CopyBackupSaves(_saveData);
@@ -200,7 +203,6 @@ internal class File /* format */ {
 		save.Set(offset, newNameData);
 	}
 
-	// FIXME: Should we use System.Buffers.Binary.BinaryPrimitives.ReverseEndianness() instead?
 	public static ushort SwapEndian(ushort val) => (ushort)(val << 8 | val >> 8);
 
 	private static ushort GetChecksum(byte[] saveBytes, int offset, bool shouldSwap) {
@@ -292,7 +294,7 @@ internal class File /* format */ {
 
 		/* Farore's Wind spawn-related? */
 		/* s32 Position? */
-		save.SetSwap(ov + 0xE64);           // x
+		save.SetSwap(ov + 0xE64);		// x
 		save.SetSwap(ov + 0xE64 + 4);   // y
 		save.SetSwap(ov + 0xE64 + 8);   // z
 		save.SetSwap(ov + 0xE64 + 12);
@@ -339,6 +341,13 @@ internal class File /* format */ {
 		}
 
 		save.SetSwap(ov + 0xF38); // Area arrival
+
+		/* Swap U16 unk_2 (scarecrowSpawnSong) */
+		int u2Pos = ov + 0x12C0;
+		for (int i = 0; i < 16; i++) {
+			save.SetSwap(u2Pos, 2);
+			u2Pos += 0x8;
+		}
 
 		/* Horse */
 		save.SetSwap(ov + 0x1348, 2); // Scene

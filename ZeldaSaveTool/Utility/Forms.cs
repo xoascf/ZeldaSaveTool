@@ -5,41 +5,50 @@ using System.Drawing.Imaging;
 
 namespace ZeldaSaveTool.Utility;
 
-internal static class Forms
-{
+internal static class Forms {
 	private static readonly Dictionary<string, string> SDict = new();
 
-	private static bool HasUsableTextProperty(IDisposable ctrl) {
-		return ctrl is Label or Button or CheckBox or ComboBox or GroupBox;
+	private static bool HasUsableTextProperty(IDisposable ctr) {
+		return ctr is Form or Label or Button or CheckBox or ComboBox or GroupBox;
 	}
 
-	public static void UpdateText(Control col) {
-		foreach (Control ctrl in col.Controls) {
-			if (!HasUsableTextProperty(ctrl)) continue;
-			string name = ctrl.Name;
-			string og = ctrl.Text;
+	public static void UpdateText(Control ctrMain) {
+		ApplyUpdatedText(ctrMain);
 
-			if (!SDict.ContainsKey(name))
-				SDict.Add(name, og);
-
-			ctrl.Text = T(SDict[name]);
-			UpdateText(ctrl);
+		foreach (Control ctr in ctrMain.Controls) {
+			if (ctr.HasChildren)
+				UpdateText(ctr);
+			else
+				ApplyUpdatedText(ctr);
 		}
 	}
 
-	public static void Localize(this ComboBox cb, Array a, int defaultIndex = 0) {
-		bool setDefault = cb.SelectedIndex == -1;
+	private static void ApplyUpdatedText(Control ctr) {
+		if (!HasUsableTextProperty(ctr))
+			return;
+
+		string name = ctr.Name;
+		string og = ctr.Text;
+
+		if (!SDict.ContainsKey(name))
+			SDict.Add(name, og);
+
+		ctr.Text = T(SDict[name]);
+	}
+
+	public static void Localize(this ComboBox cmb, Array a, int defaultIndex = 0) {
+		bool setDefault = cmb.SelectedIndex == -1;
 		int selected = defaultIndex;
 		if (!setDefault)
-			selected = cb.SelectedIndex;
+			selected = cmb.SelectedIndex;
 
 		List<string> list = new();
 
 		foreach (object? item in a)
 			list.Add(T(item.ToString()));
 
-		cb.DataSource = list;
-		cb.SelectedIndex = setDefault ? defaultIndex : selected;
+		cmb.DataSource = list;
+		cmb.SelectedIndex = setDefault ? defaultIndex : selected;
 	}
 
 	public class Tint {

@@ -2,7 +2,7 @@
 
 namespace ZeldaSaveTool
 {
-    partial class ToolForm
+	partial class ToolForm
 	{
 		/// <summary>
 		///  Required designer variable.
@@ -30,278 +30,353 @@ namespace ZeldaSaveTool
 		/// </summary>
 		private void InitializeComponent()
 		{
-			this.note = new System.Windows.Forms.Label();
-			this.version = new System.Windows.Forms.Label();
-			this.repo = new System.Windows.Forms.LinkLabel();
+			this.lblNote = new System.Windows.Forms.Label();
+			this.lblNoteHint = new System.Windows.Forms.Label();
+			this.lblVersion = new System.Windows.Forms.Label();
+			this.llbRepo = new System.Windows.Forms.LinkLabel();
+			this.lblSupported = new System.Windows.Forms.Label();
+			this.splEditors = new System.Windows.Forms.SplitContainer();
+			this.lblFormat = new System.Windows.Forms.Label();
+			this.cmbFormat = new System.Windows.Forms.ComboBox();
 			this.panel1 = new System.Windows.Forms.Panel();
-			this.saveSlot3 = new ZeldaSaveTool.Controls.SaveSlot();
-			this.saveSlot2 = new ZeldaSaveTool.Controls.SaveSlot();
-			this.saveSlot1 = new ZeldaSaveTool.Controls.SaveSlot();
-			this.TypeRegLbl = new System.Windows.Forms.Label();
-			this.tgSwitch = new ZeldaSaveTool.Controls.ToggleSwitch();
-			this.ConvertBtn = new System.Windows.Forms.Button();
-			this.SoundCb = new System.Windows.Forms.ComboBox();
-			this.SndLbl = new System.Windows.Forms.Label();
-			this.ZTargetCb = new System.Windows.Forms.ComboBox();
-			this.TargetLbl = new System.Windows.Forms.Label();
-			this.NewFormatCb = new System.Windows.Forms.ComboBox();
-			this.ConvertLbl = new System.Windows.Forms.Label();
-			this.FormatLbl = new System.Windows.Forms.Label();
-			this.label1 = new System.Windows.Forms.Label();
+			this.grpRegion = new System.Windows.Forms.GroupBox();
+			this.optPAL = new System.Windows.Forms.RadioButton();
+			this.optNTSC = new System.Windows.Forms.RadioButton();
+			this.chkDebug = new System.Windows.Forms.CheckBox();
+			this.btnSave = new System.Windows.Forms.Button();
+			this.cmbZTarget = new System.Windows.Forms.ComboBox();
+			this.lblTarget = new System.Windows.Forms.Label();
+			this.cmbSound = new System.Windows.Forms.ComboBox();
+			this.lblSound = new System.Windows.Forms.Label();
+			this.saveSlot3 = new ZeldaSaveTool.Controls.BasicSlot();
+			this.saveSlot2 = new ZeldaSaveTool.Controls.BasicSlot();
+			this.saveSlot1 = new ZeldaSaveTool.Controls.BasicSlot();
+			((System.ComponentModel.ISupportInitialize)(this.splEditors)).BeginInit();
+			this.splEditors.Panel1.SuspendLayout();
+			this.splEditors.Panel2.SuspendLayout();
+			this.splEditors.SuspendLayout();
 			this.panel1.SuspendLayout();
+			this.grpRegion.SuspendLayout();
 			this.SuspendLayout();
 			// 
-			// note
+			// lblNote
 			// 
-			this.note.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-			this.note.Font = new System.Drawing.Font("Microsoft Sans Serif", 14F, System.Drawing.FontStyle.Bold);
-			this.note.Location = new System.Drawing.Point(0, 0);
-			this.note.Name = "note";
-			this.note.Size = new System.Drawing.Size(370, 132);
-			this.note.TabIndex = 0;
-			this.note.Text = "Drop_It";
-			this.note.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-			this.note.DoubleClick += new System.EventHandler(this.Note_DoubleClick);
+			this.lblNote.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+			| System.Windows.Forms.AnchorStyles.Right)));
+			this.lblNote.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this.lblNote.Location = new System.Drawing.Point(0, 0);
+			this.lblNote.Name = "lblNote";
+			this.lblNote.Size = new System.Drawing.Size(374, 132);
+			this.lblNote.TabIndex = 0;
+			this.lblNote.Text = "Drop_It";
+			this.lblNote.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+			this.lblNote.DoubleClick += new System.EventHandler(this.Note_DoubleClick);
 			// 
-			// version
+			// lblNoteHint
 			// 
-			this.version.AutoSize = true;
-			this.version.Dock = System.Windows.Forms.DockStyle.Bottom;
-			this.version.Location = new System.Drawing.Point(0, 410);
-			this.version.Name = "version";
-			this.version.Padding = new System.Windows.Forms.Padding(3);
-			this.version.Size = new System.Drawing.Size(48, 19);
-			this.version.TabIndex = 1;
-			this.version.Text = "Version";
+			this.lblNoteHint.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+			| System.Windows.Forms.AnchorStyles.Right)));
+			this.lblNoteHint.Location = new System.Drawing.Point(0, 79);
+			this.lblNoteHint.Name = "lblNoteHint";
+			this.lblNoteHint.Size = new System.Drawing.Size(374, 23);
+			this.lblNoteHint.TabIndex = 1;
+			this.lblNoteHint.Text = "Hint_Access";
+			this.lblNoteHint.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+			this.lblNoteHint.DoubleClick += new System.EventHandler(this.Note_DoubleClick);
 			// 
-			// repo
+			// lblVersion
 			// 
-			this.repo.AutoSize = true;
-			this.repo.Dock = System.Windows.Forms.DockStyle.Right;
-			this.repo.Location = new System.Drawing.Point(155, 0);
-			this.repo.Name = "repo";
-			this.repo.Padding = new System.Windows.Forms.Padding(3);
-			this.repo.Size = new System.Drawing.Size(215, 23);
-			this.repo.TabIndex = 2;
-			this.repo.TabStop = true;
-			this.repo.Text = "https://github.com/xoascf/ZeldaSaveTool";
-			this.repo.UseCompatibleTextRendering = true;
-			this.repo.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.Repo_LinkClicked);
+			this.lblVersion.AutoSize = true;
+			this.lblVersion.Dock = System.Windows.Forms.DockStyle.Bottom;
+			this.lblVersion.Location = new System.Drawing.Point(0, 452);
+			this.lblVersion.Name = "lblVersion";
+			this.lblVersion.Padding = new System.Windows.Forms.Padding(3);
+			this.lblVersion.Size = new System.Drawing.Size(48, 19);
+			this.lblVersion.TabIndex = 4;
+			this.lblVersion.Text = "Version";
+			// 
+			// llbRepo
+			// 
+			this.llbRepo.AutoSize = true;
+			this.llbRepo.Dock = System.Windows.Forms.DockStyle.Right;
+			this.llbRepo.Location = new System.Drawing.Point(159, 0);
+			this.llbRepo.Name = "llbRepo";
+			this.llbRepo.Padding = new System.Windows.Forms.Padding(3);
+			this.llbRepo.Size = new System.Drawing.Size(215, 23);
+			this.llbRepo.TabIndex = 2;
+			this.llbRepo.TabStop = true;
+			this.llbRepo.Text = "https://github.com/xoascf/ZeldaSaveTool";
+			this.llbRepo.UseCompatibleTextRendering = true;
+			this.llbRepo.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.Repo_LinkClicked);
+			// 
+			// lblSupported
+			// 
+			this.lblSupported.AutoSize = true;
+			this.lblSupported.ForeColor = System.Drawing.SystemColors.GrayText;
+			this.lblSupported.Location = new System.Drawing.Point(13, 119);
+			this.lblSupported.Name = "lblSupported";
+			this.lblSupported.Size = new System.Drawing.Size(56, 13);
+			this.lblSupported.TabIndex = 3;
+			this.lblSupported.Text = "Supported";
+			// 
+			// splEditors
+			// 
+			this.splEditors.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
+			| System.Windows.Forms.AnchorStyles.Right)));
+			this.splEditors.IsSplitterFixed = true;
+			this.splEditors.Location = new System.Drawing.Point(0, 139);
+			this.splEditors.Name = "splEditors";
+			// 
+			// splEditors.Panel1
+			// 
+			this.splEditors.Panel1.Controls.Add(this.saveSlot3);
+			this.splEditors.Panel1.Controls.Add(this.saveSlot2);
+			this.splEditors.Panel1.Controls.Add(this.saveSlot1);
+			this.splEditors.Panel1.Padding = new System.Windows.Forms.Padding(10, 10, 10, 0);
+			// 
+			// splEditors.Panel2
+			// 
+			this.splEditors.Panel2.AutoScroll = true;
+			this.splEditors.Panel2.Controls.Add(this.lblFormat);
+			this.splEditors.Panel2.Controls.Add(this.cmbFormat);
+			this.splEditors.Panel2.Controls.Add(this.panel1);
+			this.splEditors.Panel2.Controls.Add(this.chkDebug);
+			this.splEditors.Panel2.Controls.Add(this.btnSave);
+			this.splEditors.Panel2.Controls.Add(this.cmbZTarget);
+			this.splEditors.Panel2.Controls.Add(this.lblTarget);
+			this.splEditors.Panel2.Controls.Add(this.cmbSound);
+			this.splEditors.Panel2.Controls.Add(this.lblSound);
+			this.splEditors.Panel2.Margin = new System.Windows.Forms.Padding(4);
+			this.splEditors.Panel2.Padding = new System.Windows.Forms.Padding(10, 10, 10, 8);
+			this.splEditors.Size = new System.Drawing.Size(374, 302);
+			this.splEditors.SplitterDistance = 179;
+			this.splEditors.SplitterWidth = 1;
+			this.splEditors.TabIndex = 5;
+			// 
+			// lblFormat
+			// 
+			this.lblFormat.AutoSize = true;
+			this.lblFormat.Dock = System.Windows.Forms.DockStyle.Bottom;
+			this.lblFormat.Location = new System.Drawing.Point(10, 124);
+			this.lblFormat.Name = "lblFormat";
+			this.lblFormat.Padding = new System.Windows.Forms.Padding(0, 8, 0, 4);
+			this.lblFormat.Size = new System.Drawing.Size(67, 25);
+			this.lblFormat.TabIndex = 12;
+			this.lblFormat.Text = "New_Format";
+			// 
+			// cmbFormat
+			// 
+			this.cmbFormat.Dock = System.Windows.Forms.DockStyle.Bottom;
+			this.cmbFormat.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+			this.cmbFormat.FormattingEnabled = true;
+			this.cmbFormat.Location = new System.Drawing.Point(10, 149);
+			this.cmbFormat.Name = "cmbFormat";
+			this.cmbFormat.Size = new System.Drawing.Size(174, 21);
+			this.cmbFormat.TabIndex = 13;
+			this.cmbFormat.SelectedIndexChanged += new System.EventHandler(this.Format_SelectedIndexChanged);
 			// 
 			// panel1
 			// 
-			this.panel1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
 			this.panel1.AutoSize = true;
-			this.panel1.Controls.Add(this.saveSlot3);
-			this.panel1.Controls.Add(this.saveSlot2);
-			this.panel1.Controls.Add(this.saveSlot1);
-			this.panel1.Controls.Add(this.TypeRegLbl);
-			this.panel1.Controls.Add(this.tgSwitch);
-			this.panel1.Controls.Add(this.ConvertBtn);
-			this.panel1.Controls.Add(this.SoundCb);
-			this.panel1.Controls.Add(this.SndLbl);
-			this.panel1.Controls.Add(this.ZTargetCb);
-			this.panel1.Controls.Add(this.TargetLbl);
-			this.panel1.Controls.Add(this.NewFormatCb);
-			this.panel1.Controls.Add(this.ConvertLbl);
-			this.panel1.Controls.Add(this.FormatLbl);
-			this.panel1.Location = new System.Drawing.Point(12, 135);
+			this.panel1.Controls.Add(this.grpRegion);
+			this.panel1.Dock = System.Windows.Forms.DockStyle.Bottom;
+			this.panel1.Location = new System.Drawing.Point(10, 170);
 			this.panel1.Name = "panel1";
-			this.panel1.Size = new System.Drawing.Size(340, 275);
-			this.panel1.TabIndex = 3;
+			this.panel1.Padding = new System.Windows.Forms.Padding(0, 8, 0, 8);
+			this.panel1.Size = new System.Drawing.Size(174, 68);
+			this.panel1.TabIndex = 14;
+			// 
+			// grpRegion
+			// 
+			this.grpRegion.Controls.Add(this.optPAL);
+			this.grpRegion.Controls.Add(this.optNTSC);
+			this.grpRegion.Dock = System.Windows.Forms.DockStyle.Top;
+			this.grpRegion.Location = new System.Drawing.Point(0, 8);
+			this.grpRegion.Name = "grpRegion";
+			this.grpRegion.Size = new System.Drawing.Size(174, 52);
+			this.grpRegion.TabIndex = 14;
+			this.grpRegion.TabStop = false;
+			this.grpRegion.Text = "Region";
+			// 
+			// optPAL
+			// 
+			this.optPAL.Checked = true;
+			this.optPAL.Dock = System.Windows.Forms.DockStyle.Top;
+			this.optPAL.Location = new System.Drawing.Point(3, 33);
+			this.optPAL.Name = "optPAL";
+			this.optPAL.Size = new System.Drawing.Size(168, 16);
+			this.optPAL.TabIndex = 16;
+			this.optPAL.TabStop = true;
+			this.optPAL.Text = "PAL";
+			this.optPAL.UseVisualStyleBackColor = true;
+			// 
+			// optNTSC
+			// 
+			this.optNTSC.AutoSize = true;
+			this.optNTSC.Dock = System.Windows.Forms.DockStyle.Top;
+			this.optNTSC.Location = new System.Drawing.Point(3, 16);
+			this.optNTSC.Name = "optNTSC";
+			this.optNTSC.Size = new System.Drawing.Size(168, 17);
+			this.optNTSC.TabIndex = 15;
+			this.optNTSC.Text = "NTSC";
+			this.optNTSC.UseVisualStyleBackColor = true;
+			// 
+			// chkDebug
+			// 
+			this.chkDebug.AutoSize = true;
+			this.chkDebug.Checked = true;
+			this.chkDebug.CheckState = System.Windows.Forms.CheckState.Checked;
+			this.chkDebug.Dock = System.Windows.Forms.DockStyle.Bottom;
+			this.chkDebug.Location = new System.Drawing.Point(10, 238);
+			this.chkDebug.Name = "chkDebug";
+			this.chkDebug.Padding = new System.Windows.Forms.Padding(0, 8, 0, 8);
+			this.chkDebug.Size = new System.Drawing.Size(174, 33);
+			this.chkDebug.TabIndex = 17;
+			this.chkDebug.Text = "Is_Debug";
+			this.chkDebug.UseVisualStyleBackColor = true;
+			this.chkDebug.Visible = false;
+			// 
+			// btnSave
+			// 
+			this.btnSave.Dock = System.Windows.Forms.DockStyle.Bottom;
+			this.btnSave.Location = new System.Drawing.Point(10, 271);
+			this.btnSave.Name = "btnSave";
+			this.btnSave.Size = new System.Drawing.Size(174, 23);
+			this.btnSave.TabIndex = 18;
+			this.btnSave.Text = "Save_As";
+			this.btnSave.UseVisualStyleBackColor = true;
+			this.btnSave.Click += new System.EventHandler(this.Save_Click);
+			// 
+			// cmbZTarget
+			// 
+			this.cmbZTarget.Dock = System.Windows.Forms.DockStyle.Top;
+			this.cmbZTarget.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+			this.cmbZTarget.FormattingEnabled = true;
+			this.cmbZTarget.Location = new System.Drawing.Point(10, 73);
+			this.cmbZTarget.Name = "cmbZTarget";
+			this.cmbZTarget.Size = new System.Drawing.Size(174, 21);
+			this.cmbZTarget.TabIndex = 11;
+			// 
+			// lblTarget
+			// 
+			this.lblTarget.AutoSize = true;
+			this.lblTarget.Dock = System.Windows.Forms.DockStyle.Top;
+			this.lblTarget.Location = new System.Drawing.Point(10, 48);
+			this.lblTarget.Name = "lblTarget";
+			this.lblTarget.Padding = new System.Windows.Forms.Padding(0, 8, 0, 4);
+			this.lblTarget.Size = new System.Drawing.Size(65, 25);
+			this.lblTarget.TabIndex = 10;
+			this.lblTarget.Text = "Z_Targeting";
+			// 
+			// cmbSound
+			// 
+			this.cmbSound.Dock = System.Windows.Forms.DockStyle.Top;
+			this.cmbSound.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+			this.cmbSound.FormattingEnabled = true;
+			this.cmbSound.Location = new System.Drawing.Point(10, 27);
+			this.cmbSound.Name = "cmbSound";
+			this.cmbSound.Size = new System.Drawing.Size(174, 21);
+			this.cmbSound.TabIndex = 9;
+			// 
+			// lblSound
+			// 
+			this.lblSound.AutoSize = true;
+			this.lblSound.Dock = System.Windows.Forms.DockStyle.Top;
+			this.lblSound.Location = new System.Drawing.Point(10, 10);
+			this.lblSound.Name = "lblSound";
+			this.lblSound.Padding = new System.Windows.Forms.Padding(0, 0, 0, 4);
+			this.lblSound.Size = new System.Drawing.Size(38, 17);
+			this.lblSound.TabIndex = 8;
+			this.lblSound.Text = "Sound";
 			// 
 			// saveSlot3
 			// 
-			this.saveSlot3.CurrentHealth = ((short)(48));
-			this.saveSlot3.DeathCount = 0;
-			this.saveSlot3.IsDoubleDefense = false;
-			this.saveSlot3.Location = new System.Drawing.Point(0, 178);
+			this.saveSlot3.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+			this.saveSlot3.Dock = System.Windows.Forms.DockStyle.Top;
+			this.saveSlot3.Location = new System.Drawing.Point(10, 198);
 			this.saveSlot3.Name = "saveSlot3";
-			this.saveSlot3.PlayerName = "";
-			this.saveSlot3.Size = new System.Drawing.Size(160, 94);
-			this.saveSlot3.TabIndex = 16;
+			this.saveSlot3.Size = new System.Drawing.Size(159, 94);
+			this.saveSlot3.TabIndex = 7;
+			this.saveSlot3.TabStop = false;
 			this.saveSlot3.Text = "File_3";
-			this.saveSlot3.TotalHealth = ((short)(48));
 			// 
 			// saveSlot2
 			// 
-			this.saveSlot2.CurrentHealth = ((short)(48));
-			this.saveSlot2.DeathCount = 0;
-			this.saveSlot2.IsDoubleDefense = false;
-			this.saveSlot2.Location = new System.Drawing.Point(0, 89);
+			this.saveSlot2.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+			this.saveSlot2.Dock = System.Windows.Forms.DockStyle.Top;
+			this.saveSlot2.Location = new System.Drawing.Point(10, 104);
 			this.saveSlot2.Name = "saveSlot2";
-			this.saveSlot2.PlayerName = "";
-			this.saveSlot2.Size = new System.Drawing.Size(160, 94);
-			this.saveSlot2.TabIndex = 15;
+			this.saveSlot2.Size = new System.Drawing.Size(159, 94);
+			this.saveSlot2.TabIndex = 6;
+			this.saveSlot2.TabStop = false;
 			this.saveSlot2.Text = "File_2";
-			this.saveSlot2.TotalHealth = ((short)(48));
 			// 
 			// saveSlot1
 			// 
-			this.saveSlot1.CurrentHealth = ((short)(48));
-			this.saveSlot1.DeathCount = 0;
-			this.saveSlot1.IsDoubleDefense = false;
-			this.saveSlot1.Location = new System.Drawing.Point(0, 0);
+			this.saveSlot1.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+			this.saveSlot1.Dock = System.Windows.Forms.DockStyle.Top;
+			this.saveSlot1.Location = new System.Drawing.Point(10, 10);
 			this.saveSlot1.Name = "saveSlot1";
-			this.saveSlot1.PlayerName = "";
-			this.saveSlot1.Size = new System.Drawing.Size(160, 94);
+			this.saveSlot1.Size = new System.Drawing.Size(159, 94);
 			this.saveSlot1.TabIndex = 5;
+			this.saveSlot1.TabStop = false;
 			this.saveSlot1.Text = "File_1";
-			this.saveSlot1.TotalHealth = ((short)(48));
-			// 
-			// TypeRegLbl
-			// 
-			this.TypeRegLbl.AutoSize = true;
-			this.TypeRegLbl.Location = new System.Drawing.Point(189, 153);
-			this.TypeRegLbl.Name = "TypeRegLbl";
-			this.TypeRegLbl.Size = new System.Drawing.Size(41, 13);
-			this.TypeRegLbl.TabIndex = 14;
-			this.TypeRegLbl.Text = "Region";
-			// 
-			// tgSwitch
-			// 
-			this.tgSwitch.BackColor = System.Drawing.SystemColors.ControlDarkDark;
-			this.tgSwitch.Checked = false;
-			this.tgSwitch.Cursor = System.Windows.Forms.Cursors.Hand;
-			this.tgSwitch.ForeColor = System.Drawing.SystemColors.ControlDark;
-			this.tgSwitch.LeftLabelText = "NTSC";
-			this.tgSwitch.Location = new System.Drawing.Point(215, 172);
-			this.tgSwitch.Name = "tgSwitch";
-			this.tgSwitch.RightLabelText = "PAL";
-			this.tgSwitch.Size = new System.Drawing.Size(85, 23);
-			this.tgSwitch.TabIndex = 13;
-			// 
-			// ConvertBtn
-			// 
-			this.ConvertBtn.Location = new System.Drawing.Point(192, 249);
-			this.ConvertBtn.Name = "ConvertBtn";
-			this.ConvertBtn.Size = new System.Drawing.Size(145, 23);
-			this.ConvertBtn.TabIndex = 12;
-			this.ConvertBtn.Text = "Convert_Now";
-			this.ConvertBtn.UseVisualStyleBackColor = true;
-			this.ConvertBtn.Click += new System.EventHandler(this.ConvertBtn_Click);
-			// 
-			// SoundCb
-			// 
-			this.SoundCb.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-			this.SoundCb.FormattingEnabled = true;
-			this.SoundCb.Location = new System.Drawing.Point(192, 45);
-			this.SoundCb.Name = "SoundCb";
-			this.SoundCb.Size = new System.Drawing.Size(145, 21);
-			this.SoundCb.TabIndex = 10;
-			// 
-			// SndLbl
-			// 
-			this.SndLbl.AutoSize = true;
-			this.SndLbl.Location = new System.Drawing.Point(189, 29);
-			this.SndLbl.Name = "SndLbl";
-			this.SndLbl.Size = new System.Drawing.Size(38, 13);
-			this.SndLbl.TabIndex = 6;
-			this.SndLbl.Text = "Sound";
-			// 
-			// ZTargetCb
-			// 
-			this.ZTargetCb.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-			this.ZTargetCb.FormattingEnabled = true;
-			this.ZTargetCb.Location = new System.Drawing.Point(192, 87);
-			this.ZTargetCb.Name = "ZTargetCb";
-			this.ZTargetCb.Size = new System.Drawing.Size(145, 21);
-			this.ZTargetCb.TabIndex = 10;
-			// 
-			// TargetLbl
-			// 
-			this.TargetLbl.AutoSize = true;
-			this.TargetLbl.Location = new System.Drawing.Point(189, 71);
-			this.TargetLbl.Name = "TargetLbl";
-			this.TargetLbl.Size = new System.Drawing.Size(65, 13);
-			this.TargetLbl.TabIndex = 6;
-			this.TargetLbl.Text = "Z_Targeting";
-			// 
-			// NewFormatCb
-			// 
-			this.NewFormatCb.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-			this.NewFormatCb.FormattingEnabled = true;
-			this.NewFormatCb.Location = new System.Drawing.Point(192, 128);
-			this.NewFormatCb.Name = "NewFormatCb";
-			this.NewFormatCb.Size = new System.Drawing.Size(145, 21);
-			this.NewFormatCb.TabIndex = 10;
-			this.NewFormatCb.SelectedIndexChanged += new System.EventHandler(this.NewFormatCb_SelectedIndexChanged);
-			// 
-			// ConvertLbl
-			// 
-			this.ConvertLbl.AutoSize = true;
-			this.ConvertLbl.Location = new System.Drawing.Point(189, 112);
-			this.ConvertLbl.Name = "ConvertLbl";
-			this.ConvertLbl.Size = new System.Drawing.Size(63, 13);
-			this.ConvertLbl.TabIndex = 6;
-			this.ConvertLbl.Text = "Convert_To";
-			// 
-			// FormatLbl
-			// 
-			this.FormatLbl.AutoSize = true;
-			this.FormatLbl.Location = new System.Drawing.Point(189, 8);
-			this.FormatLbl.Name = "FormatLbl";
-			this.FormatLbl.Size = new System.Drawing.Size(39, 13);
-			this.FormatLbl.TabIndex = 5;
-			this.FormatLbl.Text = "Format";
-			// 
-			// label1
-			// 
-			this.label1.AutoSize = true;
-			this.label1.ForeColor = System.Drawing.SystemColors.GrayText;
-			this.label1.Location = new System.Drawing.Point(13, 119);
-			this.label1.Name = "label1";
-			this.label1.Size = new System.Drawing.Size(56, 13);
-			this.label1.TabIndex = 4;
-			this.label1.Text = "Supported";
 			// 
 			// ToolForm
 			// 
 			this.AllowDrop = true;
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-			this.ClientSize = new System.Drawing.Size(370, 429);
-			this.Controls.Add(this.label1);
-			this.Controls.Add(this.panel1);
-			this.Controls.Add(this.repo);
-			this.Controls.Add(this.version);
-			this.Controls.Add(this.note);
+			this.ClientSize = new System.Drawing.Size(374, 471);
+			this.Controls.Add(this.splEditors);
+			this.Controls.Add(this.lblSupported);
+			this.Controls.Add(this.llbRepo);
+			this.Controls.Add(this.lblVersion);
+			this.Controls.Add(this.lblNoteHint);
+			this.Controls.Add(this.lblNote);
 			this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
 			this.KeyPreview = true;
 			this.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
 			this.MaximizeBox = false;
 			this.Name = "ToolForm";
+			this.Text = "Title";
 			this.DragDrop += new System.Windows.Forms.DragEventHandler(this.ToolForm_DragDrop);
 			this.DragEnter += new System.Windows.Forms.DragEventHandler(this.ToolForm_DragEnter);
 			this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.ToolForm_KeyDown);
+			this.splEditors.Panel1.ResumeLayout(false);
+			this.splEditors.Panel2.ResumeLayout(false);
+			this.splEditors.Panel2.PerformLayout();
+			((System.ComponentModel.ISupportInitialize)(this.splEditors)).EndInit();
+			this.splEditors.ResumeLayout(false);
 			this.panel1.ResumeLayout(false);
-			this.panel1.PerformLayout();
+			this.grpRegion.ResumeLayout(false);
+			this.grpRegion.PerformLayout();
 			this.ResumeLayout(false);
 			this.PerformLayout();
 
 		}
 
 		#endregion
-		private Label note;
-		private Label version;
-		private LinkLabel repo;
+		private Label lblNote;
+		private Label lblNoteHint;
+		private Label lblVersion;
+		private LinkLabel llbRepo;
+		private Label lblSupported;
+		private BasicSlot saveSlot1;
+		private BasicSlot saveSlot2;
+		private BasicSlot saveSlot3;
+		private SplitContainer splEditors;
+		private Button btnSave;
+		private ComboBox cmbZTarget;
+		private Label lblTarget;
+		private ComboBox cmbSound;
+		private Label lblSound;
 		private Panel panel1;
-		private Label ConvertLbl;
-		private Label FormatLbl;
-		private Button ConvertBtn;
-		private ComboBox NewFormatCb;
-		private Label label1;
-		private Label SndLbl;
-		private ComboBox ZTargetCb;
-		private Label TargetLbl;
-		private ComboBox SoundCb;
-		private ToggleSwitch tgSwitch;
-		private Label TypeRegLbl;
-		private SaveSlot saveSlot1;
-		private SaveSlot saveSlot2;
-		private SaveSlot saveSlot3;
+		private GroupBox grpRegion;
+		private RadioButton optPAL;
+		private RadioButton optNTSC;
+		private CheckBox chkDebug;
+		private Label lblFormat;
+		private ComboBox cmbFormat;
 	}
 }

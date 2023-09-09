@@ -1,40 +1,39 @@
 /* Licensed under the Open Software License version 3.0 */
 
-using System.Drawing;
 using ZeldaSaveTool.Save;
 using ZeldaSaveTool.Utility;
 
 namespace ZeldaSaveTool;
 
 public partial class ToolForm : Form {
-	private File.Format? _format;
+	private static readonly BackgroundWorker Worker = new();
+	private static File? _save;
+
+	private static string _srcSaveName = "";
+	private static byte[] _outSaveData = Zero;
 
 	public ToolForm() {
 		InitializeComponent();
 		UpdateLocale();
-		Icon = Icon.ExtractAssociatedIcon(Process.GetCurrentProcess().MainModule.FileName);
-		Program.Worker.DoWork += Worker_DoWork;
-		Program.Worker.RunWorkerCompleted += Worker_RunWorkerCompleted;
+
+		string? currentExePath = Process.GetCurrentProcess().MainModule?.FileName;
+		if (!string.IsNullOrWhiteSpace(currentExePath))
+			Icon = System.Drawing.Icon.ExtractAssociatedIcon(currentExePath);
+
+		Worker.DoWork += Worker_DoWork;
+		Worker.RunWorkerCompleted += Worker_RunWorkerCompleted;
 	}
 
-	private static string FallbackText(string? text, string fallback)
-		=> string.IsNullOrEmpty(text) ? fallback : text!;
-
-	public void UpdateLocale() {
+	private void UpdateLocale() {
 		Forms.UpdateText(this);
-		Forms.UpdateText(panel1);
-		Text = T("Title");
-		version.Text = T("Version", PVer);
-		label1.Text = T("Supported", ".sra, .sav");
-		FormatLbl.Text = T("Format", T(FallbackText(_format.ToString(), "Not_Now")));
 
-		saveSlot1.Text = T("File_1");
-		saveSlot2.Text = T("File_2");
-		saveSlot3.Text = T("File_3");
+		UpdateLoadedInfo();
 
-		SoundCb.Localize(Enum.GetValues(typeof(File.Sound)));
-		ZTargetCb.Localize(Enum.GetValues(typeof(File.ZTargeting)));
-		NewFormatCb.Localize(Enum.GetValues(typeof(File.Format)), (int)File.Format.PcPortSav);
+		lblVersion.Text = T("Version", PVer);
+		lblSupported.Text = T("Supported", ".sra, .sav");
+		cmbFormat.Localize(Enum.GetValues(typeof(File.Format)), (int)File.Format.PcPortSav);
+		cmbSound.Localize(Enum.GetValues(typeof(File.Sound)));
+		cmbZTarget.Localize(Enum.GetValues(typeof(File.ZTargeting)));
 	}
 
 	private void ToolForm_DragEnter(object sender, DragEventArgs e) {
@@ -48,45 +47,68 @@ public partial class ToolForm : Form {
 
 	private void ToolForm_DragDrop(object sender, DragEventArgs e) {
 		if (e.Data != null)
-			Program.Worker.RunWorkerAsync
+			Worker.RunWorkerAsync
 				(e.Data.GetData(DataFormats.FileDrop) as string[]);
 
 		Enabled = false;
 	}
 
+	private void CheckAndWork(string[]? files) {
+		_srcSaveName = "";
+		_outSaveData = Zero;
+
+		if (files is { Length: 1 }) {
+			string saveFilePath = files[0];
+
+			try {
+				_save = new(saveFilePath);
+
+				if (_save.ValidSave) {
+					LoadSaveFileInfo();
+					_srcSaveName = IO.BaseName(saveFilePath);
+				} else
+					_save = null;
+			} catch (Exception ex) {
+				Message.Exception(ex);
+			}
+		} else
+			Message.New(Message.Level.E, T("Select_One"));
+	}
+
 	private void Worker_DoWork(object? sender, DoWorkEventArgs e) {
-		if (Program.SaveFileInst == null)
+		Invoke(new Action<object>((args) => {
+			CheckAndWork((string[])args);
+		}), e.Argument);
+	}
+
+	private void LoadSaveFileInfo() {
+		if (_save == null)
 			return;
 
-		File save = Program.SaveFileInst;
+		saveSlot1.Info = _save.Slot1;
+		saveSlot2.Info = _save.Slot2;
+		saveSlot3.Info = _save.Slot3;
 
-		saveSlot1.DeathCount = save.Slot1.DeathCount;
-		saveSlot1.PlayerName = save.Slot1.Name ?? string.Empty;
-		saveSlot1.TotalHealth = save.Slot1.HeartsTotal;
-		saveSlot1.CurrentHealth = save.Slot1.HeartsCount;
-		saveSlot1.IsDoubleDefense = save.Slot1.DoubleDefense;
-
-		saveSlot2.DeathCount = save.Slot2.DeathCount;
-		saveSlot2.PlayerName = save.Slot2.Name ?? string.Empty;
-		saveSlot2.TotalHealth = save.Slot2.HeartsTotal;
-		saveSlot2.CurrentHealth = save.Slot2.HeartsCount;
-		saveSlot2.IsDoubleDefense = save.Slot2.DoubleDefense;
-
-		saveSlot3.DeathCount = save.Slot3.DeathCount;
-		saveSlot3.PlayerName = save.Slot3.Name ?? string.Empty;
-		saveSlot3.TotalHealth = save.Slot3.HeartsTotal;
-		saveSlot3.CurrentHealth = save.Slot3.HeartsCount;
-		saveSlot3.IsDoubleDefense = save.Slot3.DoubleDefense;
-
-		_format = save.FormatUsed;
-		FormatLbl.Text = T("Format", T(FallbackText(_format.ToString(), "Not_Now")));
-
-		SoundCb.SelectedIndex = save.SoundMode;
-		ZTargetCb.SelectedIndex = save.ZTargetingMode;
+		cmbSound.SelectedIndex = _save.SoundMode;
+		cmbZTarget.SelectedIndex = _save.ZTargetingMode;
 	}
 
 	private void Worker_RunWorkerCompleted(object? sender, EventArgs e) {
 		Enabled = true;
+		UpdateLoadedInfo();
+	}
+
+	private void UpdateLoadedInfo() {
+		if (_save != null && _srcSaveName.Length != 0) {
+			splEditors.Enabled = true;
+			lblNote.Text = _srcSaveName;
+			lblNoteHint.Text = T("Hint_Format", T(_save.FormatUsed.ToString()!));
+			return;
+		}
+
+		lblNote.Text = T("Drop_It");
+		lblNoteHint.Text = T("Hint_Access");
+		splEditors.Enabled = false;
 	}
 
 	private void Repo_LinkClicked(object sender, EventArgs e) {
@@ -110,7 +132,7 @@ public partial class ToolForm : Form {
 		if (openFileDlg.ShowDialog() != DialogResult.OK)
 			return;
 
-		Program.Worker.RunWorkerAsync(new[] { openFileDlg.FileName });
+		Worker.RunWorkerAsync(new[] { openFileDlg.FileName });
 
 		Enabled = false;
 	}
@@ -123,64 +145,62 @@ public partial class ToolForm : Form {
 		UpdateLocale();
 	}
 
-	private void ConvertBtn_Click(object sender, EventArgs e) {
-		if (Program.SaveFileInst != null) {
-			File save = Program.SaveFileInst;
+	private static void SaveNewSaveFile() {
+		if (_outSaveData == Zero)
+			return;
 
-			save.FormatExport = (File.Format)NewFormatCb.SelectedIndex;
+		const string sraFn = "THE LEGEND OF ZELDA";
+		const string sohFn = "oot_save";
+		string sraFf = T("SRA_Filter") + "|" + T("All_Filter");
+		string pcFf = T("PC_Filter") + "|" + T("All_Filter");
+		bool isSavingForN64 = _save?.FormatExport == File.Format.N64Save;
+		using SaveFileDialog savDlg = new();
+		savDlg.Title = T("Save_As_Title", _srcSaveName);
+		savDlg.FileName = isSavingForN64 ? sraFn : sohFn;
+		savDlg.Filter = isSavingForN64 ? sraFf : pcFf;
 
-			save.Slot1.DeathCount = saveSlot1.DeathCount;
-			save.Slot1.Name = saveSlot1.PlayerName;
-			save.Slot1.HeartsTotal = saveSlot1.TotalHealth;
-			save.Slot1.HeartsCount = saveSlot1.CurrentHealth;
-			save.Slot1.DoubleDefense = saveSlot1.IsDoubleDefense;
+		if (savDlg.ShowDialog() != DialogResult.OK)
+			return;
 
-			save.Slot2.DeathCount = saveSlot2.DeathCount;
-			save.Slot2.Name = saveSlot2.PlayerName;
-			save.Slot2.HeartsTotal = saveSlot2.TotalHealth;
-			save.Slot2.HeartsCount = saveSlot2.CurrentHealth;
-			save.Slot2.DoubleDefense = saveSlot2.IsDoubleDefense;
-
-			save.Slot3.DeathCount = saveSlot3.DeathCount;
-			save.Slot3.Name = saveSlot3.PlayerName;
-			save.Slot3.HeartsTotal = saveSlot3.TotalHealth;
-			save.Slot3.HeartsCount = saveSlot3.CurrentHealth;
-			save.Slot3.DoubleDefense = saveSlot3.IsDoubleDefense;
-
-			if (save.FormatExport == File.Format.N64Save) {
-				save.ToNTSC = !tgSwitch.Checked;
-				//save.IsMQ = false;
-			} else {
-				save.ToNTSC = false; // All PC Ports use PAL charset for now
-				//save.IsMQ = tgSwitch.Checked;
-			}
-
-			save.OverwriteBackups = true;
-
-			save.SoundMode = (byte)SoundCb.SelectedIndex;
-			save.ZTargetingMode = (byte)ZTargetCb.SelectedIndex;
-
-			Program.OutSaveData = save.ConvertSave();
-			Program.SaveNewSaveFile();
-		} else {
-			Message.New(Message.Level.I, T("Open_First"));
+		try {
+			IO.SaveToFile(_outSaveData, savDlg.FileName);
+		} catch (Exception ex) {
+			Message.Exception(ex);
 		}
 	}
 
-	private void NewFormatCb_SelectedIndexChanged(object sender, EventArgs e) {
-		File.Format format = (File.Format)NewFormatCb.SelectedIndex;
+	private void Save_Click(object sender, EventArgs e) {
+		if (_save != null) {
+			_save.FormatExport = (File.Format)cmbFormat.SelectedIndex;
+
+			_save.Slot1 = saveSlot1.Info;
+			_save.Slot2 = saveSlot2.Info;
+			_save.Slot3 = saveSlot3.Info;
+
+			_save.ToNTSC = optNTSC.Checked;
+			_save.AlternateChecksum = chkDebug.Checked;
+
+			_save.OverwriteBackups = true;
+
+			_save.SoundMode = (byte)cmbSound.SelectedIndex;
+			_save.ZTargetingMode = (byte)cmbZTarget.SelectedIndex;
+
+			_outSaveData = _save.ConvertSave();
+			SaveNewSaveFile();
+		} else
+			Message.New(Message.Level.I, T("Open_First"));
+	}
+
+	private void Format_SelectedIndexChanged(object sender, EventArgs e) {
+		File.Format format = (File.Format)cmbFormat.SelectedIndex;
 		if (format == File.Format.N64Save) {
-			TypeRegLbl.Visible = true;
-			tgSwitch.Visible = true;
-			TypeRegLbl.Text = T("Region");
-			tgSwitch.LeftLabelText = "NTSC";
-			tgSwitch.RightLabelText = "PAL";
+			chkDebug.Enabled = true;
+			grpRegion.Enabled = true;
 		} else {
-			TypeRegLbl.Visible = false;
-			tgSwitch.Visible = false;
-			//TypeRegLbl.Text = T("Quest");
-			//tgSwitch.LeftLabelText = "Vanilla";
-			//tgSwitch.RightLabelText = "MQ";
+			optPAL.Checked = true;
+			chkDebug.Checked = true;
+			chkDebug.Enabled = false;
+			grpRegion.Enabled = false;
 		}
 	}
 }
