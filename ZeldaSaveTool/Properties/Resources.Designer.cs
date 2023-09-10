@@ -117,16 +117,15 @@ namespace ZeldaSaveTool.Properties {
         ///Supported=Unterstützte Formate: {0}
         ///Version=Version {0}
         ///Open_First=Öffne zuerst eine Spielstandsdatei!
-        ///Supported_Filter=Alle unterstützten Dateien|*.sra;*.sav
+        ///Supported_Filter=Alle unterstützten Dateien|*.sra;*.sav;*.gci
         ///SRA_Filter=SRA-Dateien (*.sra)|*.sra
         ///PC_Filter=PC-Port-Speicherdateien (*.sav)|*.sav
+        ///GCI_Filter=GCI-Dateien (*.gci)|*.gci
         ///All_Filter=Alle Dateien (*.*)|*.*
         ///Save_As_Title=Speichere konvertiert &quot;{0}&quot; als
         ///I=Information
         ///W=Warnung
-        ///E=Fehler
-        ///Exception=Ausnahmemeldung: {0}
-        ///Selec [rest of string was truncated]&quot;;.
+        ///E= [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string de {
             get {
@@ -151,17 +150,17 @@ namespace ZeldaSaveTool.Properties {
         ///Supported=Supported formats: {0}
         ///Version=Version {0}
         ///Open_First=Open a save file first!
-        ///Supported_Filter=All Supported Files|*.sra;*.sav
+        ///Supported_Filter=All Supported Files|*.sra;*.sav;*.gci
         ///SRA_Filter=SRA Files (*.sra)|*.sra
         ///PC_Filter=PC Port Save Files (*.sav)|*.sav
+        ///GCI_Filter=GCI Files (*.gci)|*.gci
         ///All_Filter=All Files (*.*)|*.*
         ///Save_As_Title=Save converted &quot;{0}&quot; as
         ///I=Information
         ///W=Warning
         ///E=Error
         ///Exception=Exception message: {0}
-        ///Select_One=Select only one save file to convert!
-        ///Invalid=Fil [rest of string was truncated]&quot;;.
+        ///Select_One=Select o [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string en {
             get {
@@ -176,15 +175,13 @@ namespace ZeldaSaveTool.Properties {
         ///Supported=Formatos admitidos: {0}
         ///Version=Versión {0}
         ///Open_First=¡Abra primero un archivo de guardado!
-        ///Supported_Filter=Todos los archivos admitidos|*.sra;*.sav
+        ///Supported_Filter=Todos los archivos admitidos|*.sra;*.sav;*.gci
         ///SRA_Filter=Archivos SRA (*.sra)|*.sra
         ///PC_Filter=Archivos de guardado de PC Port (*.sav)|*.sav
+        ///GCI_Filter=Archivos GCI (*.gci)|*.gci
         ///All_Filter=Todos los archivos (*.*)|*.*
         ///Save_As_Title=Guardar &quot;{0}&quot; convertido como
-        ///I=Información
-        ///W=Aviso
-        ///E=Error
-        ///Exception=Mensaje [rest of string was truncated]&quot;;.
+        ///I=I [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string es {
             get {
@@ -199,13 +196,12 @@ namespace ZeldaSaveTool.Properties {
         ///Supported=Formats pris en charge : {0}
         ///Version=Version {0}
         ///Open_First=Ouvrir d&apos;abord un fichier de sauvegarde !
-        ///Supported_Filter=Tous les fichiers pris en charge|*.sra;*.sav
+        ///Supported_Filter=Tous les fichiers pris en charge|*.sra;*.sav;*.gci
         ///SRA_Filter=Fichiers SRA (*.sra)|*.sra
         ///PC_Filter=Fichiers de sauvegarde du port PC (*.sav)|*.sav
+        ///GCI_Filter=Fichiers GCI (*.gci)|*.gci
         ///All_Filter=Tous les fichiers (*.*)|*.*
-        ///Save_As_Title=Enregistrer &quot;{0}&quot; converti sous...
-        ///I=Information
-        ///W=Averti [rest of string was truncated]&quot;;.
+        ///Save_As_Title=Enregistrer &quot; [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string fr {
             get {

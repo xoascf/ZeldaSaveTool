@@ -26,10 +26,10 @@ internal class File /* format */ {
 	private byte[] _saveData = Zero;
 
 	public File(string filePath) {
-		if (!(ValidSave = IsValid(filePath)))
+		if (!(ValidSave = HasValidSize(filePath)))
 			return;
 
-		_preConvertedData = PreConvert(IO.GetFileBytes(filePath).ToBigEndian());
+		_preConvertedData = PreConvert(IO.GetFileBytes(filePath));
 		FormatUsed = GetFormat(_preConvertedData);
 		SoundMode = _preConvertedData.Byte(0);
 		ZTargetingMode = _preConvertedData.Byte(1);
@@ -52,14 +52,16 @@ internal class File /* format */ {
 	}
 
 	private bool IsOpenOotSave { get; set; }
+	private bool IsGCISave { get; set; }
 
 	private const int MaxSize = 0x8000; // Default save file size.
 	private const int MinSize = 0x7A00; // Used in Open Ocarina.
+	private const int GCISize = 0x12040; // Dolphin save file size.
 
 	private static Format GetFormat(byte[] input) =>
 		input.Get(0x87, 1)[0] == 0 ? Format.PcPortSav : Format.N64Save;
 
-	public bool IsValid(string path) {
+	public bool HasValidSize(string path) {
 		if (!IO.Exists(path)) return false;
 
 		switch (IO.GetFileLength(path)) {
@@ -70,14 +72,40 @@ internal class File /* format */ {
 				IsOpenOotSave = true;
 				return true;
 
+			case GCISize:
+				IsGCISave = true;
+				return true;
+
 			default:
 				Message.New(Message.Level.E, T("Wrong_Size"));
 				return false;
 		}
 	}
 
+	public static void GetN64FromGCI(ref byte[] data) {
+		byte[] newData = new byte[MaxSize];
+		int[] tailToSkip = { 0, 0x4, 0x0 };
+		int offset = 0x6044;
+
+		Array.Copy(data, offset, newData, 0, 0x20);
+		offset += 0x20;
+
+		for (int i = 0; i < 3; ++i) {
+			Array.Copy(data, offset, newData, 0x20 + i * 0x1450, 0x1450);
+			offset += 0x1450 + tailToSkip[i];
+		}
+
+		data = newData;
+	}
+
 	public byte[] PreConvert(byte[] data) {
-		if (IsOpenOotSave) Array.Resize(ref data, MaxSize);
+		if (IsGCISave)
+			GetN64FromGCI(ref data);
+
+		data.ToBigEndian();
+
+		if (IsOpenOotSave)
+			Array.Resize(ref data, MaxSize);
 
 		FixName(ref data, 0x0044);
 		FixName(ref data, 0x1494);
@@ -136,8 +164,8 @@ internal class File /* format */ {
 
 		bool to = !AlternateChecksum;
 
-        /* Update checksum */
-        _saveData.Set(0x1352 + 0x20,
+		/* Update checksum */
+		_saveData.Set(0x1352 + 0x20,
 			ByteArray.FromU16(GetChecksum(_saveData, 0x20, to), to));
 		_saveData.Set(0x1352 + 0x1470,
 			ByteArray.FromU16(GetChecksum(_saveData, 0x1470, to), to));
