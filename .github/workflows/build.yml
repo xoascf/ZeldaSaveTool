@@ -18,7 +18,7 @@ jobs:
           submodules: recursive
 
       - name: Build app
-        run: dotnet publish -c Release --os win -f net8.0-windows -p:PublishSingleFile=true
+        run: dotnet publish -c Release --os win -f net8.0-windows -p:PublishSingleFile=true -p:DebugType=None -p:DebugSymbols=false --no-self-contained
 
       - name: Upload build artifact
         uses: actions/upload-artifact@v3
