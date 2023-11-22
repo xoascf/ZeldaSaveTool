@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
-    <TargetFrameworks>net40-client;net6.0-windows</TargetFrameworks>
+    <TargetFrameworks>net20;net8.0-windows</TargetFrameworks>
     <LangVersion>10</LangVersion>
     <Nullable>enable</Nullable>
     <UseWindowsForms>True</UseWindowsForms>
@@ -32,6 +32,10 @@
 
   <ItemGroup>
     <Content Include="Icon.ico" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(TargetFramework)|$(Platform)'=='net20|AnyCPU'">
+    <Reference Include="System.Windows.Forms" />
   </ItemGroup>
 
   <ItemGroup>

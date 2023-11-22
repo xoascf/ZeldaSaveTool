@@ -17,7 +17,7 @@ public partial class ToolForm : Form {
 		UpdateLocale();
 
 		string? currentExePath = Process.GetCurrentProcess().MainModule?.FileName;
-		if (!string.IsNullOrWhiteSpace(currentExePath))
+		if (!currentExePath.IsNullOrWhiteSpace())
 			Icon = System.Drawing.Icon.ExtractAssociatedIcon(currentExePath);
 
 		Worker.DoWork += Worker_DoWork;

@@ -1,4 +1,5 @@
 name: CI
+
 on:
   push:
     branches: [master]
@@ -6,23 +7,21 @@ on:
   pull_request:
     paths-ignore: ["**.adoc"]
   workflow_dispatch:
+
 jobs:
   build:
     runs-on: windows-2022
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
         with:
           submodules: recursive
 
-      - name: Add msbuild to PATH
-        uses: microsoft/setup-msbuild@v1.1
-
-      - name: Publish app
-        run: dotnet publish -c Release --os win -f net6.0-windows -p:PublishSingleFile=true
+      - name: Build app
+        run: dotnet publish -c Release --os win -f net8.0-windows -p:PublishSingleFile=true
 
       - name: Upload build artifact
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: ZeldaSaveTool_x64
-          path: ZeldaSaveTool/bin/Release/net6.0-windows/win-x64/publish/ZeldaSaveTool.exe
+          path: ZeldaSaveTool/bin/Release/net8.0-windows/win-x64/publish/ZeldaSaveTool.exe

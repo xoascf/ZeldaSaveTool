@@ -35,7 +35,7 @@ namespace ZeldaSaveTool
 			this.lblVersion = new System.Windows.Forms.Label();
 			this.llbRepo = new System.Windows.Forms.LinkLabel();
 			this.lblSupported = new System.Windows.Forms.Label();
-			this.splEditors = new System.Windows.Forms.SplitContainer();
+			this.splEditors = new SplitContainer();
 			this.lblFormat = new System.Windows.Forms.Label();
 			this.cmbFormat = new System.Windows.Forms.ComboBox();
 			this.panel1 = new System.Windows.Forms.Panel();
