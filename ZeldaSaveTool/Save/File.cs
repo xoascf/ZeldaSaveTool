@@ -53,10 +53,12 @@ internal class File /* format */ {
 
 	private bool IsOpenOotSave { get; set; }
 	private bool IsGCISave { get; set; }
+	private bool IsSRMSave { get; set; }
 
 	private const int MaxSize = 0x8000; // Default save file size.
 	private const int MinSize = 0x7A00; // Used in Open Ocarina.
 	private const int GCISize = 0x12040; // Dolphin save file size.
+	private const int SRMSize = 0x48800; // SaveRAM save file size.
 
 	private static Format GetFormat(byte[] input) =>
 		input.Get(0x87, 1)[0] == 0 ? Format.PcPortSav : Format.N64Save;
@@ -74,6 +76,10 @@ internal class File /* format */ {
 
 			case GCISize:
 				IsGCISave = true;
+				return true;
+
+			case SRMSize:
+				IsSRMSave = true;
 				return true;
 
 			default:
@@ -95,14 +101,27 @@ internal class File /* format */ {
 			offset += 0x1450 + tailToSkip[i];
 		}
 
-		data = newData;
+		data = newData.ToBigEndian();
+	}
+
+	public static void GetN64FromSRM(ref byte[] data) {
+		byte[] newData;
+		try {
+			newData = data.Get(0x40800, MaxSize);
+			data = newData.ToBigEndian();
+		} catch {
+			newData = data.Get(0x20800, MaxSize);
+			data = newData.ToBigEndian();
+		}
 	}
 
 	public byte[] PreConvert(byte[] data) {
 		if (IsGCISave)
 			GetN64FromGCI(ref data);
-
-		data.ToBigEndian();
+		else if (IsSRMSave)
+			GetN64FromSRM(ref data);
+		else
+			data.ToBigEndian();
 
 		if (IsOpenOotSave)
 			Array.Resize(ref data, MaxSize);

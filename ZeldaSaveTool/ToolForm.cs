@@ -30,7 +30,7 @@ public partial class ToolForm : Form {
 		UpdateLoadedInfo();
 
 		lblVersion.Text = T("Version", PVer);
-		lblSupported.Text = T("Supported", ".sra, .sav, .gci");
+		lblSupported.Text = T("Supported", ".sra, .sav, .gci, .srm, .SaveRAM");
 		cmbFormat.Localize(Enum.GetValues(typeof(File.Format)), (int)File.Format.PcPortSav);
 		cmbSound.Localize(Enum.GetValues(typeof(File.Sound)));
 		cmbZTarget.Localize(Enum.GetValues(typeof(File.ZTargeting)));
@@ -127,6 +127,7 @@ public partial class ToolForm : Form {
 							 T("SRA_Filter") + @"|" +
 							 T("PC_Filter") + @"|" +
 							 T("GCI_Filter") + @"|" +
+							 T("SRM_Filter") + @"|" +
 							 T("All_Filter");
 		openFileDlg.RestoreDirectory = true;
 
