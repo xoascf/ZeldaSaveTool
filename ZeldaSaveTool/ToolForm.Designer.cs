@@ -36,6 +36,9 @@ namespace ZeldaSaveTool
 			this.llbRepo = new System.Windows.Forms.LinkLabel();
 			this.lblSupported = new System.Windows.Forms.Label();
 			this.splEditors = new SplitContainer();
+			this.saveSlot3 = new ZeldaSaveTool.Controls.BasicSlot();
+			this.saveSlot2 = new ZeldaSaveTool.Controls.BasicSlot();
+			this.saveSlot1 = new ZeldaSaveTool.Controls.BasicSlot();
 			this.lblFormat = new System.Windows.Forms.Label();
 			this.cmbFormat = new System.Windows.Forms.ComboBox();
 			this.panel1 = new System.Windows.Forms.Panel();
@@ -48,9 +51,6 @@ namespace ZeldaSaveTool
 			this.lblTarget = new System.Windows.Forms.Label();
 			this.cmbSound = new System.Windows.Forms.ComboBox();
 			this.lblSound = new System.Windows.Forms.Label();
-			this.saveSlot3 = new ZeldaSaveTool.Controls.BasicSlot();
-			this.saveSlot2 = new ZeldaSaveTool.Controls.BasicSlot();
-			this.saveSlot1 = new ZeldaSaveTool.Controls.BasicSlot();
 			((System.ComponentModel.ISupportInitialize)(this.splEditors)).BeginInit();
 			this.splEditors.Panel1.SuspendLayout();
 			this.splEditors.Panel2.SuspendLayout();
@@ -152,6 +152,39 @@ namespace ZeldaSaveTool
 			this.splEditors.SplitterDistance = 179;
 			this.splEditors.SplitterWidth = 1;
 			this.splEditors.TabIndex = 5;
+			// 
+			// saveSlot3
+			// 
+			this.saveSlot3.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+			this.saveSlot3.Dock = System.Windows.Forms.DockStyle.Top;
+			this.saveSlot3.Location = new System.Drawing.Point(10, 198);
+			this.saveSlot3.Name = "saveSlot3";
+			this.saveSlot3.Size = new System.Drawing.Size(159, 94);
+			this.saveSlot3.TabIndex = 7;
+			this.saveSlot3.TabStop = false;
+			this.saveSlot3.Text = "File_3";
+			// 
+			// saveSlot2
+			// 
+			this.saveSlot2.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+			this.saveSlot2.Dock = System.Windows.Forms.DockStyle.Top;
+			this.saveSlot2.Location = new System.Drawing.Point(10, 104);
+			this.saveSlot2.Name = "saveSlot2";
+			this.saveSlot2.Size = new System.Drawing.Size(159, 94);
+			this.saveSlot2.TabIndex = 6;
+			this.saveSlot2.TabStop = false;
+			this.saveSlot2.Text = "File_2";
+			// 
+			// saveSlot1
+			// 
+			this.saveSlot1.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+			this.saveSlot1.Dock = System.Windows.Forms.DockStyle.Top;
+			this.saveSlot1.Location = new System.Drawing.Point(10, 10);
+			this.saveSlot1.Name = "saveSlot1";
+			this.saveSlot1.Size = new System.Drawing.Size(159, 94);
+			this.saveSlot1.TabIndex = 5;
+			this.saveSlot1.TabStop = false;
+			this.saveSlot1.Text = "File_1";
 			// 
 			// lblFormat
 			// 
@@ -288,39 +321,6 @@ namespace ZeldaSaveTool
 			this.lblSound.Size = new System.Drawing.Size(38, 17);
 			this.lblSound.TabIndex = 8;
 			this.lblSound.Text = "Sound";
-			// 
-			// saveSlot3
-			// 
-			this.saveSlot3.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-			this.saveSlot3.Dock = System.Windows.Forms.DockStyle.Top;
-			this.saveSlot3.Location = new System.Drawing.Point(10, 198);
-			this.saveSlot3.Name = "saveSlot3";
-			this.saveSlot3.Size = new System.Drawing.Size(159, 94);
-			this.saveSlot3.TabIndex = 7;
-			this.saveSlot3.TabStop = false;
-			this.saveSlot3.Text = "File_3";
-			// 
-			// saveSlot2
-			// 
-			this.saveSlot2.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-			this.saveSlot2.Dock = System.Windows.Forms.DockStyle.Top;
-			this.saveSlot2.Location = new System.Drawing.Point(10, 104);
-			this.saveSlot2.Name = "saveSlot2";
-			this.saveSlot2.Size = new System.Drawing.Size(159, 94);
-			this.saveSlot2.TabIndex = 6;
-			this.saveSlot2.TabStop = false;
-			this.saveSlot2.Text = "File_2";
-			// 
-			// saveSlot1
-			// 
-			this.saveSlot1.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-			this.saveSlot1.Dock = System.Windows.Forms.DockStyle.Top;
-			this.saveSlot1.Location = new System.Drawing.Point(10, 10);
-			this.saveSlot1.Name = "saveSlot1";
-			this.saveSlot1.Size = new System.Drawing.Size(159, 94);
-			this.saveSlot1.TabIndex = 5;
-			this.saveSlot1.TabStop = false;
-			this.saveSlot1.Text = "File_1";
 			// 
 			// ToolForm
 			// 
