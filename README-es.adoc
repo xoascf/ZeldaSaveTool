@@ -64,4 +64,4 @@ Este programa es todavía experimental, y puede que no conserve algunos objetos 
 * Archivos de guardado de PC Port (*.sav) para {uri-gh}/blawar/ooot[Open Ocarina^] (oot.sav) y {uri-gh}/HarbourMasters/Shipwright[Ship of Harkinian^] (oot_save.sav).
 
 == Requisitos
-*.NET 6.0.18*: https://dotnet.microsoft.com/download/dotnet/6.0/runtime
+*.NET 8.0*: https://dotnet.microsoft.com/download/dotnet/8.0/runtime
