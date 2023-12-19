@@ -58,8 +58,6 @@ internal static class ByteArray {
 		return b.DataTo(f, s, l);
 	}
 
-	public static byte Byte(this byte[] data, int index) => data.Get(index, 1)[0];
-
 	public static void SetSwap(this byte[] input, int from, int length = 4) {
 		input.Set(from, Reverse(input.Get(from, length)));
 	}

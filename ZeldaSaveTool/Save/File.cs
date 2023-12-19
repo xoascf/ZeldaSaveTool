@@ -31,24 +31,24 @@ internal class File /* format */ {
 
 		_preConvertedData = PreConvert(IO.GetFileBytes(filePath));
 		FormatUsed = GetFormat(_preConvertedData);
-		SoundMode = _preConvertedData.Byte(0);
-		ZTargetingMode = _preConvertedData.Byte(1);
+		SoundMode = _preConvertedData[0];
+		ZTargetingMode = _preConvertedData[1];
 		bool be = FormatUsed != Format.PcPortSav;
 
 		Slot1.DeathCount = _preConvertedData.Get(0x22 + 0x20, 2).ToI16(be);
 		Slot1.HeartsTotal = _preConvertedData.Get(0x2E + 0x20, 2).ToI16(be);
 		Slot1.HeartsCount = _preConvertedData.Get(0x30 + 0x20, 2).ToI16(be);
-		Slot1.DoubleDefense = _preConvertedData.Byte(0x3D + 0x20) != 0;
+		Slot1.DoubleDefense = _preConvertedData[0x3D + 0x20] != 0;
 
 		Slot2.DeathCount = _preConvertedData.Get(0x22 + 0x1470, 2).ToI16(be);
 		Slot2.HeartsTotal = _preConvertedData.Get(0x2E + 0x1470, 2).ToI16(be);
 		Slot2.HeartsCount = _preConvertedData.Get(0x30 + 0x1470, 2).ToI16(be);
-		Slot2.DoubleDefense = _preConvertedData.Byte(0x3D + 0x1470) != 0;
+		Slot2.DoubleDefense = _preConvertedData[0x3D + 0x1470] != 0;
 
 		Slot3.DeathCount = _preConvertedData.Get(0x22 + 0x28C0, 2).ToI16(be);
 		Slot3.HeartsTotal = _preConvertedData.Get(0x2E + 0x28C0, 2).ToI16(be);
 		Slot3.HeartsCount = _preConvertedData.Get(0x30 + 0x28C0, 2).ToI16(be);
-		Slot2.DoubleDefense = _preConvertedData.Byte(0x3D + 0x28C0) != 0;
+		Slot2.DoubleDefense = _preConvertedData[0x3D + 0x28C0] != 0;
 	}
 
 	private bool IsOpenOotSave { get; set; }
