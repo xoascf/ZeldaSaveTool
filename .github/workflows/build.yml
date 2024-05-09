@@ -17,10 +17,22 @@ jobs:
         with:
           submodules: recursive
 
-      - name: Build app
+      - name: Add msbuild to PATH
+        uses: microsoft/setup-msbuild@v2
+
+      - name: Build app (.NET Framework 2.0)
+        run: msbuild -nologo -restore ZeldaSaveTool.sln /p:Configuration=Release /p:TargetFramework=net20 /p:TargetFrameworkVersion=v2.0
+
+      - name: Upload build artifact (.NET Framework 2.0)
+        uses: actions/upload-artifact@v3
+        with:
+          name: ZeldaSaveTool_net20
+          path: ZeldaSaveTool/bin/Release/net20/ZeldaSaveTool.exe
+
+      - name: Build app (.NET 8.0)
         run: dotnet publish -c Release --os win -f net8.0-windows -p:PublishSingleFile=true -p:DebugType=None -p:DebugSymbols=false --no-self-contained
 
-      - name: Upload build artifact
+      - name: Upload build artifact (.NET 8.0)
         uses: actions/upload-artifact@v3
         with:
           name: ZeldaSaveTool_x64
