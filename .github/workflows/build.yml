@@ -13,18 +13,18 @@ jobs:
     runs-on: windows-2022
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           submodules: recursive
 
       - name: Add msbuild to PATH
-        uses: microsoft/setup-msbuild@v2
+        uses: microsoft/setup-msbuild@v3
 
       - name: Build app (.NET Framework 2.0)
         run: msbuild -nologo -restore ZeldaSaveTool.sln /p:Configuration=Release /p:TargetFramework=net20 /p:TargetFrameworkVersion=v2.0
 
       - name: Upload build artifact (.NET Framework 2.0)
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: ZeldaSaveTool_net20
           path: ZeldaSaveTool/bin/Release/net20/ZeldaSaveTool.exe
@@ -33,7 +33,7 @@ jobs:
         run: dotnet publish -c Release --os win -f net8.0-windows -p:PublishSingleFile=true -p:DebugType=None -p:DebugSymbols=false --no-self-contained
 
       - name: Upload build artifact (.NET 8.0)
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: ZeldaSaveTool_x64
           path: ZeldaSaveTool/bin/Release/net8.0-windows/win-x64/publish/ZeldaSaveTool.exe
