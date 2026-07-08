@@ -57,8 +57,15 @@ internal class File /* format */ {
 
 	private const int MaxSize = 0x8000; // Default save file size.
 	private const int MinSize = 0x7A00; // Used in Open Ocarina.
-	private const int GCISize = 0x12040; // Dolphin save file size.
 	private const int SRMSize = 0x48800; // SaveRAM save file size.
+
+	// GCI (Dolphin) format constants
+	private const int GCIHeaderSize  = 0x40; // Directory-entry header size.
+	private const int GCIBlockSize   = 0x2000; // Size of each data block.
+	private const int GCISaveOffset  = 0x6044; // Offset of N64 save data within the GCI file.
+	// 0x20 (global header) + 3 * 0x1450 (slots) + 0x4 (skip between slot 2 and 3)
+	private const int GCISaveLength  = 0x20 + 3 * 0x1450 + 0x4;
+	private const int GCIMinFileSize = GCISaveOffset + GCISaveLength; // Minimum valid GCI size.
 
 	private static Format GetFormat(byte[] input) =>
 		input.Get(0x87, 1)[0] == 0 ? Format.PcPortSav : Format.N64Save;
@@ -66,7 +73,9 @@ internal class File /* format */ {
 	public bool HasValidSize(string path) {
 		if (!IO.Exists(path)) return false;
 
-		switch (IO.GetFileLength(path)) {
+		long length = IO.GetFileLength(path);
+
+		switch (length) {
 			case MaxSize:
 				return true;
 
@@ -74,24 +83,28 @@ internal class File /* format */ {
 				IsOpenOotSave = true;
 				return true;
 
-			case GCISize:
-				IsGCISave = true;
-				return true;
-
 			case SRMSize:
 				IsSRMSave = true;
 				return true;
 
 			default:
+				/* GCI (Dolphin): 0x40-byte directory header + N whole 0x2000-byte data blocks */
+				if ((length - GCIHeaderSize) % GCIBlockSize == 0 && length >= GCIMinFileSize) {
+					IsGCISave = true;
+					return true;
+				}
 				Message.New(Message.Level.E, T("Wrong_Size"));
 				return false;
 		}
 	}
 
 	public static void GetN64FromGCI(ref byte[] data) {
+		if (data.Length < GCIMinFileSize)
+			throw new(T("Wrong_Size"));
+
 		byte[] newData = new byte[MaxSize];
 		int[] tailToSkip = { 0, 0x4, 0x0 };
-		int offset = 0x6044;
+		int offset = GCISaveOffset;
 
 		Array.Copy(data, offset, newData, 0, 0x20);
 		offset += 0x20;
