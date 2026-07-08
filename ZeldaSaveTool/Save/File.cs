@@ -35,20 +35,25 @@ internal class File /* format */ {
 		ZTargetingMode = _preConvertedData[1];
 		bool be = FormatUsed != Format.PcPortSav;
 
-		Slot1.DeathCount = _preConvertedData.Get(0x22 + 0x20, 2).ToI16(be);
-		Slot1.HeartsTotal = _preConvertedData.Get(0x2E + 0x20, 2).ToI16(be);
-		Slot1.HeartsCount = _preConvertedData.Get(0x30 + 0x20, 2).ToI16(be);
-		Slot1.DoubleDefense = _preConvertedData[0x3D + 0x20] != 0;
+		Structs.Oot.Save save1 = Reader.ByteToType<Structs.Oot.Save>(_preConvertedData.Get(0x20, 0x1354), be);
+		Slot1.DeathCount = (short)save1.info.playerData.deaths;
+		Slot1.HeartsTotal = save1.info.playerData.healthCapacity;
+		Slot1.HeartsCount = save1.info.playerData.health;
+		Slot1.DoubleDefense = save1.info.playerData.isDoubleDefenseAcquired != 0;
 
-		Slot2.DeathCount = _preConvertedData.Get(0x22 + 0x1470, 2).ToI16(be);
-		Slot2.HeartsTotal = _preConvertedData.Get(0x2E + 0x1470, 2).ToI16(be);
-		Slot2.HeartsCount = _preConvertedData.Get(0x30 + 0x1470, 2).ToI16(be);
-		Slot2.DoubleDefense = _preConvertedData[0x3D + 0x1470] != 0;
+		Structs.Oot.Save save2 = Reader.ByteToType<Structs.Oot.Save>(_preConvertedData.Get(0x1470, 0x1354), be);
 
-		Slot3.DeathCount = _preConvertedData.Get(0x22 + 0x28C0, 2).ToI16(be);
-		Slot3.HeartsTotal = _preConvertedData.Get(0x2E + 0x28C0, 2).ToI16(be);
-		Slot3.HeartsCount = _preConvertedData.Get(0x30 + 0x28C0, 2).ToI16(be);
-		Slot2.DoubleDefense = _preConvertedData[0x3D + 0x28C0] != 0;
+		Slot2.DeathCount = (short)save2.info.playerData.deaths;
+		Slot2.HeartsTotal = save2.info.playerData.healthCapacity;
+		Slot2.HeartsCount = save2.info.playerData.health;
+		Slot2.DoubleDefense = save2.info.playerData.isDoubleDefenseAcquired != 0;
+
+		Structs.Oot.Save save3 = Reader.ByteToType<Structs.Oot.Save>(_preConvertedData.Get(0x28C0, 0x1354), be);
+
+		Slot3.DeathCount = (short)save3.info.playerData.deaths;
+		Slot3.HeartsTotal = save3.info.playerData.healthCapacity;
+		Slot3.HeartsCount = save3.info.playerData.health;
+		Slot3.DoubleDefense = save3.info.playerData.isDoubleDefenseAcquired != 0;
 	}
 
 	private bool IsOpenOotSave { get; set; }
@@ -168,31 +173,31 @@ internal class File /* format */ {
 		_saveData.Set(1, ZTargetingMode);
 
 		bool be = FormatUsed != Format.PcPortSav;
+		bool exportBe = FormatExport != Format.PcPortSav;
 
-		_saveData.Set(0x22 + 0x20, ByteArray.FromI16(Slot1.DeathCount, be));
-		_saveData.Set(0x2E + 0x20, ByteArray.FromI16(Slot1.HeartsTotal, be));
-		_saveData.Set(0x30 + 0x20, ByteArray.FromI16(Slot1.HeartsCount, be));
-		_saveData.Set(0x3D + 0x20, Slot1.DoubleDefense);
-		_saveData.Set(0xCF + 0x20, Slot1.DoubleDefense ? 0x14 : 0x00);
+		Structs.Oot.Save save1 = Reader.ByteToType<Structs.Oot.Save>(_saveData.Get(0x20, 0x1354), be);
+		save1.info.playerData.deaths = (ushort)Slot1.DeathCount;
+		save1.info.playerData.healthCapacity = Slot1.HeartsTotal;
+		save1.info.playerData.health = Slot1.HeartsCount;
+		save1.info.playerData.isDoubleDefenseAcquired = (byte)(Slot1.DoubleDefense ? 1 : 0);
+		save1.info.inventory.defenseHearts = (sbyte)(Slot1.DoubleDefense ? 0x14 : 0x00);
+		_saveData.Set(0x20, Reader.TypeToByte(save1, exportBe));
 
-		_saveData.Set(0x22 + 0x1470, ByteArray.FromI16(Slot2.DeathCount, be));
-		_saveData.Set(0x2E + 0x1470, ByteArray.FromI16(Slot2.HeartsTotal, be));
-		_saveData.Set(0x30 + 0x1470, ByteArray.FromI16(Slot2.HeartsCount, be));
-		_saveData.Set(0x3D + 0x1470, Slot2.DoubleDefense);
-		_saveData.Set(0xCF + 0x1470, Slot2.DoubleDefense ? 0x14 : 0x00);
+		Structs.Oot.Save save2 = Reader.ByteToType<Structs.Oot.Save>(_saveData.Get(0x1470, 0x1354), be);
+		save2.info.playerData.deaths = (ushort)Slot2.DeathCount;
+		save2.info.playerData.healthCapacity = Slot2.HeartsTotal;
+		save2.info.playerData.health = Slot2.HeartsCount;
+		save2.info.playerData.isDoubleDefenseAcquired = (byte)(Slot2.DoubleDefense ? 1 : 0);
+		save2.info.inventory.defenseHearts = (sbyte)(Slot2.DoubleDefense ? 0x14 : 0x00);
+		_saveData.Set(0x1470, Reader.TypeToByte(save2, exportBe));
 
-		_saveData.Set(0x22 + 0x28C0, ByteArray.FromI16(Slot3.DeathCount, be));
-		_saveData.Set(0x2E + 0x28C0, ByteArray.FromI16(Slot3.HeartsTotal, be));
-		_saveData.Set(0x30 + 0x28C0, ByteArray.FromI16(Slot3.HeartsCount, be));
-		_saveData.Set(0x3D + 0x28C0, Slot3.DoubleDefense);
-		_saveData.Set(0xCF + 0x28C0, Slot3.DoubleDefense ? 0x14 : 0x00);
-
-		if (FormatUsed == Format.N64Save && FormatExport == Format.PcPortSav
-			|| FormatUsed == Format.PcPortSav && FormatExport == Format.N64Save) {
-			_saveData = FixBytePos(_saveData, 0);
-			_saveData = FixBytePos(_saveData, 0x1470 - 0x20);
-			_saveData = FixBytePos(_saveData, 0x28C0 - 0x20);
-		}
+		Structs.Oot.Save save3 = Reader.ByteToType<Structs.Oot.Save>(_saveData.Get(0x28C0, 0x1354), be);
+		save3.info.playerData.deaths = (ushort)Slot3.DeathCount;
+		save3.info.playerData.healthCapacity = Slot3.HeartsTotal;
+		save3.info.playerData.health = Slot3.HeartsCount;
+		save3.info.playerData.isDoubleDefenseAcquired = (byte)(Slot3.DoubleDefense ? 1 : 0);
+		save3.info.inventory.defenseHearts = (sbyte)(Slot3.DoubleDefense ? 0x14 : 0x00);
+		_saveData.Set(0x28C0, Reader.TypeToByte(save3, exportBe));
 
 		bool to = !AlternateChecksum;
 
@@ -273,151 +278,6 @@ internal class File /* format */ {
 		}
 
 		return checksum;
-	}
-
-	private static byte[] FixBytePos(byte[] save, int offset) {
-		int ov = offset + 0x20;
-
-		save.SetSwap(ov);           // Entrance
-		save.SetSwap(ov + 0x04);    // Age
-		save.SetSwap(ov + 0x08);    // Cutscene
-		save.SetSwap(ov + 0x0C, 2); // Time
-		save.SetSwap(ov + 0x10);    // Night?
-		save.SetSwap(ov + 0x14);    // Days?
-		save.SetSwap(ov + 0x18);    // Biggoron days?
-
-		/* MAGICZ (ov + 0x1C, length: 6, skipped) */
-
-		save.SetSwap(ov + 0x22, 2); // Death counter
-
-		/* PLAYERNA (ov + 0x24, length: 8, skipped) */
-
-		save.SetSwap(ov + 0x2C, 2); // Disk flag, is this used for Rando/MQ now?
-		save.SetSwap(ov + 0x2E, 2); // Total hearts
-		save.SetSwap(ov + 0x30, 2); // Health
-
-		/* Magic meter (ov + 0x32, length: 1, skipped) */
-		/* Current magic (ov + 0x33, length: 1, skipped) */
-
-		save.SetSwap(ov + 0x34, 2); // Rupees
-		save.SetSwap(ov + 0x36, 2); // Giant's Knife uses?
-		save.SetSwap(ov + 0x38, 2); // Navi timer
-
-		/* Magic flag? (ov + 0x3A, length: 1, skipped) */
-		/* ?? (ov + 0x3B, length: 1?, skipped) */
-		/* Magic flag? (ov + 0x3C, length: 1, skipped) */
-		/* Magic flag? (ov + 0x3D, length: 1, skipped) */
-		/* Has Biggoron flag? (ov + 0x3E, length: 1, skipped) */
-		/* ?? (ov + 0x3F, length: 1, skipped) */
-
-		/* Child equips */
-		//save.SetSwap(ov + 0x40);
-		//save.SetSwap(ov + 0x40 + 4, 3);
-		save.SetSwap(ov + 0x40 + 8, 2);
-
-		/* Adult equips */
-		//save.SetSwap(ov + 0x4A);
-		//save.SetSwap(ov + 0x4A + 4, 3);
-		save.SetSwap(ov + 0x4A + 8, 2);
-
-		/* ??? */
-		save.SetSwap(ov + 0x66, 2); // Scene
-
-		/* Equips */
-		//save.SetSwap(ov + 0x68);
-		//save.SetSwap(ov + 0x68 + 4, 3);
-		save.SetSwap(ov + 0x68 + 8, 2);
-
-		/* Inventory */
-		//save.SetSwap(ov + 0x74, 24);
-		//save.SetSwap(ov + 0x74 + 0x18, 16);
-		save.SetSwap(ov + 0x74 + 0x28, 2);
-		save.SetSwap(ov + 0x74 + 0x2C);
-		save.SetSwap(ov + 0x74 + 0x30);
-		//save.SetSwap(ov + 0x74 + 0x34, 20);
-		//save.SetSwap(ov + 0x74 + 0x48, 19);
-		/* ??? */
-		save.SetSwap(ov + 0x74 + 0x5C, 2);
-
-		/* Scene flags loop x124 */
-		int sFlagsPos = ov + 0xD4;
-		for (int i = 0; i < 124; i++) {
-			save.SetSwap(sFlagsPos);
-			save.SetSwap(sFlagsPos + 0x04);
-			save.SetSwap(sFlagsPos + 0x08);
-			save.SetSwap(sFlagsPos + 0x0C);
-			save.SetSwap(sFlagsPos + 0x10);
-			save.SetSwap(sFlagsPos + 0x14);
-			save.SetSwap(sFlagsPos + 0x18);
-			sFlagsPos += 0x1C;
-		}
-
-		/* Farore's Wind spawn-related? */
-		/* s32 Position? */
-		save.SetSwap(ov + 0xE64);		// x
-		save.SetSwap(ov + 0xE64 + 4);   // y
-		save.SetSwap(ov + 0xE64 + 8);   // z
-		save.SetSwap(ov + 0xE64 + 12);
-		save.SetSwap(ov + 0xE64 + 16);
-		save.SetSwap(ov + 0xE64 + 20);
-		save.SetSwap(ov + 0xE64 + 24);
-		save.SetSwap(ov + 0xE64 + 28);
-		save.SetSwap(ov + 0xE64 + 32);
-		save.SetSwap(ov + 0xE64 + 36);
-
-		/* Gs x6 */
-		int gsPos = ov + 0xE9C;
-		for (int i = 0; i < 6; i++) {
-			save.SetSwap(gsPos);
-			gsPos += 4;
-		}
-
-		/* Highscores x7 */
-		int hsPos = ov + 0xEB8;
-		for (int i = 0; i < 7; i++) {
-			save.SetSwap(hsPos);
-			hsPos += 4;
-		}
-
-		/* Event check info x14 */
-		int eventChkPos = ov + 0xED4;
-		for (int i = 0; i < 14; i++) {
-			save.SetSwap(eventChkPos, 2);
-			eventChkPos += 2;
-		}
-
-		/* Item get info x4 */
-		int infGetPos = ov + 0xEF0;
-		for (int i = 0; i < 4; i++) {
-			save.SetSwap(infGetPos, 2);
-			infGetPos += 2;
-		}
-
-		/* Info table loop x30 */
-		int infTaPos = ov + 0xEF8;
-		for (int i = 0; i < 30; i++) {
-			save.SetSwap(infTaPos, 2);
-			infTaPos += 2;
-		}
-
-		save.SetSwap(ov + 0xF38); // Area arrival
-
-		/* Swap U16 unk_2 (scarecrowSpawnSong) */
-		int u2Pos = ov + 0x12C0;
-		for (int i = 0; i < 16; i++) {
-			save.SetSwap(u2Pos, 2);
-			u2Pos += 0x8;
-		}
-
-		/* Horse */
-		save.SetSwap(ov + 0x1348, 2); // Scene
-		/* s16 Position? */
-		save.SetSwap(ov + 0x1348 + 0x02, 2); // x
-		save.SetSwap(ov + 0x1348 + 0x04, 2); // y
-		save.SetSwap(ov + 0x1348 + 0x06, 2); // z
-		save.SetSwap(ov + 0x1348 + 0x08, 2);
-
-		return save;
 	}
 
 	/*   This function will overwrite save data backups!   */
