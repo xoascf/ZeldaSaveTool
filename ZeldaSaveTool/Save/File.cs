@@ -156,13 +156,9 @@ internal class File /* format */ {
 	}
 
 	public void NormalizeNames() {
-		if (Slot1.Name != null) _saveData.Set(0x0044, Charset.GetNameBytes(Slot1.Name));
-		if (Slot2.Name != null) _saveData.Set(0x1494, Charset.GetNameBytes(Slot2.Name));
-		if (Slot3.Name != null) _saveData.Set(0x28E4, Charset.GetNameBytes(Slot3.Name));
-
-		FixName(ref _saveData, 0x0044, ToNTSC);
-		FixName(ref _saveData, 0x1494, ToNTSC);
-		FixName(ref _saveData, 0x28E4, ToNTSC);
+		if (Slot1.Name != null) _saveData.Set(0x0044, Charset.GetNameBytes(Slot1.Name, ToNTSC));
+		if (Slot2.Name != null) _saveData.Set(0x1494, Charset.GetNameBytes(Slot2.Name, ToNTSC));
+		if (Slot3.Name != null) _saveData.Set(0x28E4, Charset.GetNameBytes(Slot3.Name, ToNTSC));
 	}
 
 	public byte[] ConvertSave() {
@@ -238,31 +234,25 @@ internal class File /* format */ {
 						b += (int)Charset.Chars.NtscLatin;
 						break;
 				}
-			} else if (b > (int)Charset.Chars.N9 && b != (int)Charset.Chars.Space)
-				switch (b) {
-					// Has NTSC-U charset.
-					case >= (int)Charset.Chars.AaA + (int)Charset.Chars.NtscLatin:
-						switch (b) {
-							case (int)Charset.Chars.NtscDash:
-								b = (int)Charset.Chars.Dash;
-								break;
-							case (int)Charset.Chars.NtscDot:
-								b = (int)Charset.Chars.Dot;
-								break;
-							default:
-								b -= (int)Charset.Chars.NtscLatin;
-								break;
-						}
-
-						break;
-
-					// Has NTSC-J charset.
-					case >= (int)Charset.Chars.Unk0:
-						b = (int)Charset.Chars.Dot; // Replace with a dot for now.
-						break;
+			} else if (b > (int)Charset.Chars.N9 && b != (int)Charset.Chars.Space) {
+				// Has NTSC-U charset.
+				if (b >= (int)Charset.Chars.AaA + (int)Charset.Chars.NtscLatin) {
+					switch (b) {
+						case (int)Charset.Chars.NtscDash:
+							b = (int)Charset.Chars.Dash;
+							break;
+						case (int)Charset.Chars.NtscDot:
+							b = (int)Charset.Chars.Dot;
+							break;
+						default:
+							b -= (int)Charset.Chars.NtscLatin;
+							break;
+					}
 				}
+				// Preserve NTSC-J Japanese characters by doing nothing if b is between Unk0 and NtscLatin boundaries.
+			}
 
-			newNameData[i] += b;
+			newNameData[i] = b;
 		}
 
 		save.Set(offset, newNameData);

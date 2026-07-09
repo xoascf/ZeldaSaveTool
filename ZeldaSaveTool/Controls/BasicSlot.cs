@@ -69,7 +69,7 @@ internal sealed class BasicSlot : GroupBox {
 		data = new Slot();
 	}
 
-	private static readonly Regex NameRegex = new("[^ a-zA-Z0-9.-]+");
+	private static readonly Regex NameRegex = new("[^ \\p{IsHiragana}\\p{IsKatakana}a-zA-Z0-9.-]+");
 
 	private static void PlayerNameTextChanged(object? sender, EventArgs e){
 		if (sender == null)

@@ -199,10 +199,9 @@ public partial class ToolForm : Form {
 			chkDebug.Enabled = true;
 			grpRegion.Enabled = true;
 		} else {
-			optPAL.Checked = true;
 			chkDebug.Checked = true;
 			chkDebug.Enabled = false;
-			grpRegion.Enabled = false;
+			grpRegion.Enabled = true;
 		}
 	}
 }
