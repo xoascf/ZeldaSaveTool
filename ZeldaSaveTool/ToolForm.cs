@@ -30,7 +30,7 @@ public partial class ToolForm : Form {
 		UpdateLoadedInfo();
 
 		lblVersion.Text = T("Version", PVer);
-		lblSupported.Text = T("Supported", ".sra, .sav, .gci, .srm, .SaveRAM");
+		lblSupported.Text = T("Supported", ".sra, .sav, .gci, .srm, .SaveRAM, .v2.sav, .st*, .m64p, .zip, .pj.zip, .pj");
 		cmbFormat.Localize(Enum.GetValues(typeof(File.Format)), (int)File.Format.PcPortSav);
 		cmbSound.Localize(Enum.GetValues(typeof(File.Sound)));
 		cmbZTarget.Localize(Enum.GetValues(typeof(File.ZTargeting)));
@@ -128,6 +128,12 @@ public partial class ToolForm : Form {
 							 T("PC_Filter") + @"|" +
 							 T("GCI_Filter") + @"|" +
 							 T("SRM_Filter") + @"|" +
+							 T("M64_FZ_Filter") + @"|" +
+							 T("M64_State_Filter") + @"|" +
+							 T("M64_Save_Filter") + @"|" +
+							 T("Zip_Filter") + @"|" +
+							 T("PJ64_Zip_Filter") + @"|" +
+							 T("PJ64_Filter") + @"|" +
 							 T("All_Filter");
 		openFileDlg.RestoreDirectory = true;
 

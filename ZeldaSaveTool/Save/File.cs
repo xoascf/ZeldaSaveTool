@@ -24,15 +24,21 @@ internal class File /* format */ {
 
 	private readonly byte[] _preConvertedData = Zero;
 	private byte[] _saveData = Zero;
+	private bool _isExtractedFromRam;
 
 	public File(string filePath) {
-		if (!(ValidSave = HasValidSize(filePath)))
+		if (!IO.Exists(filePath)) {
+			ValidSave = false;
 			return;
+		}
 
 		_preConvertedData = PreConvert(IO.GetFileBytes(filePath));
-		FormatUsed = GetFormat(_preConvertedData);
-		SoundMode = _preConvertedData[0];
-		ZTargetingMode = _preConvertedData[1];
+
+		if (!(ValidSave = HasValidSize(_preConvertedData.Length)))
+			return;
+		FormatUsed = GetFormat(_preConvertedData, IO.GetFileBytes(filePath).Length);
+		SoundMode = _preConvertedData[0] <= 3 ? _preConvertedData[0] : (byte)0;
+		ZTargetingMode = _preConvertedData[1] <= 1 ? _preConvertedData[1] : (byte)0;
 		bool be = FormatUsed != Format.PcPortSav;
 
 		Structs.Oot.Save save1 = Reader.ByteToType<Structs.Oot.Save>(_preConvertedData.Get(0x20, 0x1354), be);
@@ -72,35 +78,151 @@ internal class File /* format */ {
 	private const int GCISaveLength  = 0x20 + 3 * 0x1450 + 0x4;
 	private const int GCIMinFileSize = GCISaveOffset + GCISaveLength; // Minimum valid GCI size.
 
-	private static Format GetFormat(byte[] input) =>
-		input.Get(0x87, 1)[0] == 0 ? Format.PcPortSav : Format.N64Save;
+	private Format GetFormat(byte[] input, int length) {
+		if (length == MinSize) return Format.PcPortSav;
+		// TODO: Some sizes check was removed, so checking for this in this moment is not right.
+		return input[0x87] == 0 ? Format.PcPortSav : Format.N64Save;
+	}
 
-	public bool HasValidSize(string path) {
-		if (!IO.Exists(path)) return false;
+	public bool HasValidSize(int length) {
+		if (length == MaxSize) return true;
 
-		long length = IO.GetFileLength(path);
+		Message.New(Message.Level.E, T("Wrong_Size"));
+		return false;
+	}
 
-		switch (length) {
-			case MaxSize:
-				return true;
+	private class SramCandidate {
+		public byte[] Data = Zero;
+		public bool IsMultiSlot;
+	}
 
-			case MinSize:
-				IsOpenOotSave = true;
-				return true;
-
-			case SRMSize:
-				IsSRMSave = true;
-				return true;
-
-			default:
-				/* GCI (Dolphin): 0x40-byte directory header + N whole 0x2000-byte data blocks */
-				if ((length - GCIHeaderSize) % GCIBlockSize == 0 && length >= GCIMinFileSize) {
-					IsGCISave = true;
-					return true;
-				}
-				Message.New(Message.Level.E, T("Wrong_Size"));
-				return false;
+	private SramCandidate ExtractSramFromRamDump(byte[] data) {
+		// Handle ZIP compressed memory dumps
+		if (data.Length > 4 && data[0] == 0x50 && data[1] == 0x4B && data[2] == 0x03 && data[3] == 0x04) {
+			try {
+				byte[] unzipped = IO.DecompressZip(data);
+				if (unzipped.Length > 0) data = unzipped;
+			} catch {
+				// Ignore and proceed
+			}
 		}
+
+		// Handle GZIP compressed memory dumps
+		if (data.Length > 2 && data[0] == 0x1F && data[1] == 0x8B) {
+			try {
+				data = IO.DecompressGzip(data);
+			} catch {
+				// ""
+			}
+		}
+
+		// Minimum size for a memory dump is larger than SRAM
+		if (data.Length <= MaxSize) return new SramCandidate { Data = data, IsMultiSlot = true };
+
+		// Collect all candidate SRAM blocks found in the dump.
+		List<SramCandidate> candidates = new();
+
+		for (int i = 0; i < data.Length - MaxSize - 8; i += 4) {
+			byte[] fourBytes = data.Get(i, 4);
+			ByteOrder type = Convert.Identify(fourBytes, Convert.SaveMagic);
+			if (type == ByteOrder.Unknown) continue;
+			if (!CheckZeldazPattern(data, i, type)) continue;
+
+			byte[] sram = data.Get(i - 0x3C, MaxSize);
+			byte[] converted = sram.ToBigEndian(type);
+
+			// Check if there is also a ZELDAZ at slot-2 offset (full SRAM block).
+			// If so, skip ahead past the remaining slots to avoid adding them individually.
+			int slot2ZeldOffset = i + 0x1450;
+			bool isMultiSlot = false;
+			if (slot2ZeldOffset + 4 < data.Length) {
+				byte[] slot2Bytes = data.Get(slot2ZeldOffset, 4);
+				ByteOrder slot2Type = Convert.Identify(slot2Bytes, Convert.SaveMagic);
+				if (slot2Type == type) isMultiSlot = true;
+			}
+
+			// De-duplicate: only add if no existing candidate has the same bytes.
+			bool isDuplicate = false;
+			foreach (SramCandidate existing in candidates) {
+				if (existing.Data.Matches(converted)) {
+					isDuplicate = true;
+					break;
+				}
+			}
+
+			if (!isDuplicate)
+				candidates.Add(new SramCandidate { Data = converted, IsMultiSlot = isMultiSlot });
+
+			// If this was a multi-slot SRAM block, skip past all its slots.
+			if (isMultiSlot)
+				i += 0x1450 * 5; // Skip past all 6 slot/backup ZELDAZ patterns.
+		}
+
+		if (candidates.Count == 0)
+			return new SramCandidate { Data = data, IsMultiSlot = true };
+
+		// The scan finds candidates in file order (oldest first in a save state).
+		// Reverse so candidates[0] is the most recently saved state (last occurrence in file).
+		candidates.Reverse();
+
+		if (candidates.Count == 1)
+			return candidates[0];
+
+		// Multiple distinct SRAM blocks found, guess we gotta ask the user which one to load.
+		return PromptSramSelection(candidates);
+	}
+
+	private static SramCandidate PromptSramSelection(List<SramCandidate> candidates) {
+		using Form form = new() {
+			Text = T("Select_Save"),
+			Width = 380,
+			Height = 300,
+			StartPosition = FormStartPosition.CenterParent,
+			FormBorderStyle = FormBorderStyle.FixedDialog,
+			MaximizeBox = false,
+			MinimizeBox = false,
+		};
+
+		ListBox listBox = new() {
+			Dock = DockStyle.Fill,
+			Font = new System.Drawing.Font("Consolas", 10),
+		};
+
+		for (int c = 0; c < candidates.Count; c++) {
+			byte[] sram = candidates[c].Data;
+			string name1 = Charset.GetReadableName(sram.Get(0x0044, 8));
+			string name2 = Charset.GetReadableName(sram.Get(0x1494, 8));
+			string name3 = Charset.GetReadableName(sram.Get(0x28E4, 8));
+			if (name1.IsNullOrWhiteSpace()) name1 = "---";
+			if (name2.IsNullOrWhiteSpace()) name2 = "---";
+			if (name3.IsNullOrWhiteSpace()) name3 = "---";
+			listBox.Items.Add($"#{c + 1}: {name1} | {name2} | {name3}");
+		}
+
+		listBox.SelectedIndex = 0;
+
+		Button ok = new() {
+			Text = "OK",
+			Dock = DockStyle.Bottom,
+			DialogResult = DialogResult.OK,
+		};
+
+		form.Controls.Add(listBox);
+		form.Controls.Add(ok);
+		form.AcceptButton = ok;
+
+		int selected = 0;
+		if (form.ShowDialog() == DialogResult.OK && listBox.SelectedIndex >= 0)
+			selected = listBox.SelectedIndex;
+
+		return candidates[selected];
+	}
+
+	private static bool CheckZeldazPattern(byte[] data, int offset, ByteOrder type) {
+		int start = offset - 0x3C;
+		if (start < 0 || start + MaxSize > data.Length) return false;
+
+		return true;
 	}
 
 	public static void GetN64FromGCI(ref byte[] data) {
@@ -134,23 +256,42 @@ internal class File /* format */ {
 	}
 
 	public byte[] PreConvert(byte[] data) {
+		int length = data.Length;
+		if (length == MinSize)
+			IsOpenOotSave = true;
+		else if (length == SRMSize)
+			IsSRMSave = true;
+		else if ((length - GCIHeaderSize) % GCIBlockSize == 0 && length >= GCIMinFileSize)
+			IsGCISave = true;
+
 		if (IsGCISave)
 			GetN64FromGCI(ref data);
 		else if (IsSRMSave)
 			GetN64FromSRM(ref data);
-		else
-			data.ToBigEndian();
+		else {
+			bool wasLarger = data.Length > MaxSize;
+			SramCandidate candidate = ExtractSramFromRamDump(data);
+			data = candidate.Data;
+			if (data.Length == MaxSize)
+				data.ToBigEndian();
+
+			if (wasLarger)
+				_isExtractedFromRam = !candidate.IsMultiSlot;
+		}
 
 		if (IsOpenOotSave)
 			Array.Resize(ref data, MaxSize);
 
-		FixName(ref data, 0x0044);
-		FixName(ref data, 0x1494);
-		FixName(ref data, 0x28E4);
+		// Determine the format early so that ToNTSC evaluates correctly for FixName
+		FormatUsed = GetFormat(data, length);
 
 		Slot1.Name = Charset.GetReadableName(data.Get(0x0044, 8));
 		Slot2.Name = Charset.GetReadableName(data.Get(0x1494, 8));
 		Slot3.Name = Charset.GetReadableName(data.Get(0x28E4, 8));
+
+		FixName(ref data, 0x0044, FormatUsed == Format.N64Save);
+		FixName(ref data, 0x1494, FormatUsed == Format.N64Save);
+		FixName(ref data, 0x28E4, FormatUsed == Format.N64Save);
 
 		return data;
 	}
@@ -167,6 +308,7 @@ internal class File /* format */ {
 		NormalizeNames();
 		_saveData.Set(0, SoundMode);
 		_saveData.Set(1, ZTargetingMode);
+		_saveData.Set(3, new byte[] { 0x98, 0x09, 0x10, 0x21, (byte)'Z', (byte)'E', (byte)'L', (byte)'D', (byte)'A' });
 
 		bool be = FormatUsed != Format.PcPortSav;
 		bool exportBe = FormatExport != Format.PcPortSav;
@@ -177,9 +319,17 @@ internal class File /* format */ {
 		save1.info.playerData.health = Slot1.HeartsCount;
 		save1.info.playerData.isDoubleDefenseAcquired = (byte)(Slot1.DoubleDefense ? 1 : 0);
 		save1.info.inventory.defenseHearts = (sbyte)(Slot1.DoubleDefense ? 0x14 : 0x00);
+		if (_isExtractedFromRam)
+			save1.cutsceneIndex = 0; // Prevent crash when falling back to savedSceneId from File Select
+
 		_saveData.Set(0x20, Reader.TypeToByte(save1, exportBe));
 
-		Structs.Oot.Save save2 = Reader.ByteToType<Structs.Oot.Save>(_saveData.Get(0x1470, 0x1354), be);
+		Structs.Oot.Save save2;
+		if (_isExtractedFromRam)
+			save2 = new Structs.Oot.Save(); // Memory dumps only contain Slot 1. Slot 2 is garbage?
+		else
+			save2 = Reader.ByteToType<Structs.Oot.Save>(_saveData.Get(0x1470, 0x1354), be);
+
 		save2.info.playerData.deaths = (ushort)Slot2.DeathCount;
 		save2.info.playerData.healthCapacity = Slot2.HeartsTotal;
 		save2.info.playerData.health = Slot2.HeartsCount;
@@ -187,7 +337,12 @@ internal class File /* format */ {
 		save2.info.inventory.defenseHearts = (sbyte)(Slot2.DoubleDefense ? 0x14 : 0x00);
 		_saveData.Set(0x1470, Reader.TypeToByte(save2, exportBe));
 
-		Structs.Oot.Save save3 = Reader.ByteToType<Structs.Oot.Save>(_saveData.Get(0x28C0, 0x1354), be);
+		Structs.Oot.Save save3;
+		if (_isExtractedFromRam)
+			save3 = new Structs.Oot.Save(); // "" Slot 3 is garbage?
+		else
+			save3 = Reader.ByteToType<Structs.Oot.Save>(_saveData.Get(0x28C0, 0x1354), be);
+
 		save3.info.playerData.deaths = (ushort)Slot3.DeathCount;
 		save3.info.playerData.healthCapacity = Slot3.HeartsTotal;
 		save3.info.playerData.health = Slot3.HeartsCount;

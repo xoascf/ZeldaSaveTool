@@ -43,32 +43,44 @@
 			string name = "";
 			bool isJapanese = false;
 			foreach (byte b in nameBytes) {
-				if (b >= 65 && b <= 171) {
+				// Characters 65-170 are exclusive to Japanese (Katakana/Hiragana).
+				// 171 is 'A' in NTSC, so it must be excluded.
+				if (b >= 65 && b <= 170) {
 					isJapanese = true;
 					break;
 				}
 			}
 
 			foreach (byte nameByte in nameBytes) {
-				if (isJapanese && nameByte >= 10 && nameByte <= 171) {
+				if (isJapanese && nameByte >= 10 && nameByte <= 170) {
 					name += JapaneseChars[nameByte - 10];
 					continue;
 				}
 				
-				if (!Enum.IsDefined(typeof(Chars), (int)nameByte))
+				byte b = nameByte;
+				// If it's an NTSC English character (>= 171), shift it down to the PAL range for rendering
+				if (b >= (int)Chars.AaA + (int)Chars.NtscLatin) {
+					if (b == (int)Chars.NtscDash) b = (int)Chars.Dash;
+					else if (b == (int)Chars.NtscDot) b = (int)Chars.Dot;
+					else b -= (byte)Chars.NtscLatin;
+				}
+
+				if (!Enum.IsDefined(typeof(Chars), (int)b))
 					continue;
 
 				string nameChar;
 
-				if ((Chars)nameByte >= Chars.Space)
-					nameChar = (Chars)nameByte switch {
-						Chars.Space => " ",
-						Chars.Dash => "-",
-						Chars.Dot => ".",
+				if ((Chars)b >= Chars.Space)
+					nameChar = b switch {
+						(byte)Chars.Space => " ",
+						(byte)Chars.Dash => "-",
+						(byte)Chars.Dot => ".",
+						(byte)Chars.NtscDash => "-",
+						(byte)Chars.NtscDot => ".",
 						_ => ""
 					};
 				else
-					nameChar = ((Chars)nameByte).ToString();
+					nameChar = ((Chars)b).ToString();
 
 				name += nameChar.Substring(nameChar.Length - 1);
 			}

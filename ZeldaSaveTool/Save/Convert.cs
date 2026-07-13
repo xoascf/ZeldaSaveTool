@@ -5,9 +5,9 @@ using ZeldaSaveTool.Utility;
 namespace ZeldaSaveTool.Save;
 
 internal static class Convert {
-	private static readonly byte[] SaveMagic = { 0x5A, 0x45, 0x4C, 0x44 }; /* ZELD */
+	internal static readonly byte[] SaveMagic = { 0x5A, 0x45, 0x4C, 0x44 }; /* ZELD */
 
-	private static ByteOrder Identify(byte[] input, byte[] magic) {
+	internal static ByteOrder Identify(byte[] input, byte[] magic) {
 		if (magic.Length != input.Length)
 			return ByteOrder.Unknown;
 
