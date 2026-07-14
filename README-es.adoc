@@ -12,7 +12,7 @@
 :uri-ci: {uri-repo}/actions/workflows/build.yml
 :uri-shields: https://img.shields.io
 :img-licence-badge: {uri-shields}/github/license/{proj-repo}.svg?label=Licencia
-:img-ci-badge: {uri-shields}/github/actions/workflow/status/{proj-repo}/build.yml?label=Estado%20de%20compilación
+:img-ci-badge: {uri-shields}/github/actions/workflow/status/{proj-repo}/build.yml?label=Estado%20de%20compilaci%C3%B3n
 
 = {proj-name}
 
@@ -29,7 +29,7 @@ ifdef::env-github[]
   <a href="{uri-licence}">
     <img src="{img-licence-badge}" />
   </a>
-  <a href="{url-ci}">
+  <a href="{uri-ci}">
     <img src="{img-ci-badge}" />
   </a>
 </p>
