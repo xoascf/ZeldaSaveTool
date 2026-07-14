@@ -12,7 +12,7 @@
 :uri-ci: {uri-repo}/actions/workflows/build.yml
 :uri-shields: https://img.shields.io
 :img-licence-badge: {uri-shields}/github/license/{proj-repo}.svg?label=Licencia
-:img-ci-badge: {uri-shields}/github/actions/workflow/status/{proj-repo}/build.yml?label=Estado de compilación
+:img-ci-badge: {uri-shields}/github/actions/workflow/status/{proj-repo}/build.yml?label=Estado%20de%20compilación
 
 = {proj-name}
 
@@ -48,7 +48,7 @@ image::{proj-logo}[{proj-name}, align=center, link="{uri-repo}"]
 
 [.text-center]
 image:{img-licence-badge}[Licencia, align=center, link="{uri-licence}"]
-image:{img-ci-badge}[Estado de compilación (GitHub Actions), align=center, link="{url-ci}"]
+image:{img-ci-badge}[Estado de compilación (GitHub Actions), align=center, link="{uri-ci}"]
 endif::[]
 
 == Descargas
