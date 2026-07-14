@@ -53,15 +53,31 @@ endif::[]
 
 Drop your save file into the program window and specify where to save the converted file.
 
+== Download
+There is no public release yet, but you can download the latest builds via https://nightly.link/xoascf/ZeldaSaveTool/workflows/build/master?preview[nightly.link^].
+
+== Usage
+Drop your save file into the program window, choose your target format, and specify where to save the converted file. The program will automatically detect your input format!
+
 == How it works
 {proj-name} determines the byte order of the save file, corrects the name so that it can be exported for NTSC or PAL and converts it to the specified format for the PC Port, emulator, etc.
 
 == Notes
 This program is still experimental, and may not keep some items or progress of certain dungeons when converting saves, please report any related problems by {uri-repo}/issues/new/choose[submitting an issue^].
 
+* *Ship of Harkinian*: Save the converted file directly to the game's root directory (where `soh.exe` is located) as `oot_save.sav`. Do NOT save it in the saves folder as `file1.sav` or `global.sav`. The game will automatically update it to its newer JSON format upon loading.
+* *3DS Saves*: When converting from 3DS save files (*.bin), the death count is not preserved (it is replaced by the save count).
+* *Regions*: Make sure to select the correct region for the ROM used, otherwise Japanese characters or squares may appear in the player names.
+
 .Supported formats:
 * Emulator save files (*.sra) from any version of the NTSC and PAL releases of the original game.
-* PC Port save files (*.sav) for {uri-gh}/blawar/ooot[Open Ocarina^] (oot.sav) and {uri-gh}/HarbourMasters/Shipwright[Ship of Harkinian^] (oot_save.sav).
+* PC Port save files (*.sav) for {uri-gh}/blawar/ooot[Open Ocarina^] (oot.sav) and {uri-gh}/HarbourMasters/Shipwright[Ship of Harkinian^] (only Deckard Alfa 1.0.0 and Roy Alfa 2.0.0) (oot_save.sav).
+* Dolphin save files (*.gci).
+* RetroArch and other Libretro SaveRAM files (*.srm, *.SaveRAM).
+* Mupen64Plus and Mupen64Plus FZ saves and states (*.v2.sav, *.st*, *.m64p).
+* Project64 save states (*.pj).
+* 3DS save files (*.bin).
+* Compressed save files and states (*.zip, *.pj.zip).
 
 == Requirements
 *.NET 8.0*: https://dotnet.microsoft.com/download/dotnet/8.0/runtime

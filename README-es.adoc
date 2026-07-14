@@ -53,15 +53,31 @@ endif::[]
 
 Arrastre su guardado a la ventana del programa y especifique dónde guardar el archivo convertido.
 
+== Descargas
+Aún no hay una versión pública, pero puede descargar las últimas versiones a través de https://nightly.link/xoascf/ZeldaSaveTool/workflows/build/master?preview[nightly.link^].
+
+== Uso
+Arrastre su guardado a la ventana del programa, elija el formato deseado y especifique dónde guardar el archivo convertido. ¡El programa detectará automáticamente el formato de entrada!
+
 == Cómo funciona
 {proj-name} determina el orden de los bytes del archivo de guardado, corrige el nombre para que pueda ser exportado para NTSC o PAL y lo convierte al formato especificado para PC Port, emulador, etc.
 
 == Notas
 Este programa es todavía experimental, y puede que no conserve algunos objetos o el progreso de ciertas mazmorras al convertir los guardados, {uri-repo}/issues/new/choose[informe de cualquier problema relacionado^].
 
+* *Ship of Harkinian*: Guarde el archivo convertido directamente en el directorio raíz del juego (donde se encuentra `soh.exe`) como `oot_save.sav`. NO lo guarde en la carpeta de guardados como `file1.sav` o `global.sav`. El juego lo actualizará automáticamente a su nuevo formato JSON al cargarlo.
+* *Guardados de 3DS*: Al convertir desde archivos de guardado de 3DS (*.bin), el recuento de muertes no se conserva (se reemplaza por el recuento de guardados).
+* *Regiones*: Asegúrese de seleccionar la región correcta de la ROM utilizada; de lo contrario, podrían aparecer caracteres japoneses o cuadrados en los nombres de los jugadores.
+
 .Formatos compatibles:
 * Archivos de guardado de emulador (*.sra) de cualquier versión del juego original NTSC y PAL.
-* Archivos de guardado de PC Port (*.sav) para {uri-gh}/blawar/ooot[Open Ocarina^] (oot.sav) y {uri-gh}/HarbourMasters/Shipwright[Ship of Harkinian^] (oot_save.sav).
+* Archivos de guardado de PC Port (*.sav) para {uri-gh}/blawar/ooot[Open Ocarina^] (oot.sav) y {uri-gh}/HarbourMasters/Shipwright[Ship of Harkinian^] (sólo Deckard Alfa 1.0.0 y Roy Alfa 2.0.0) (oot_save.sav).
+* Archivos de guardado de Dolphin (*.gci).
+* Archivos SaveRAM de RetroArch y Libretro (*.srm, *.SaveRAM).
+* Guardados y estados de Mupen64Plus y Mupen64Plus FZ (*.v2.sav, *.st*, *.m64p).
+* Estados de guardado de Project64 (*.pj).
+* Archivos de guardado de 3DS (*.bin).
+* Archivos y estados de guardado comprimidos (*.zip, *.pj.zip).
 
 == Requisitos
 *.NET 8.0*: https://dotnet.microsoft.com/download/dotnet/8.0/runtime
