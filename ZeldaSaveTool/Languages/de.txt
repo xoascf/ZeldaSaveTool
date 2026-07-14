@@ -4,11 +4,12 @@ Drop_It=Legen Sie Ihre Speicherdatei hier ab
 Supported=Unterstützte Formate: {0}
 Version=Version {0}
 Open_First=Öffne zuerst eine Spielstandsdatei!
-Supported_Filter=Alle unterstützten Dateien|*.sra;*.sav;*.gci;*.srm;*.SaveRAM;*.v2.sav;*.st*;*.m64p;*.zip;*.pj.zip;*.pj
+Supported_Filter=Alle unterstützten Dateien|*.sra;*.sav;*.gci;*.srm;*.SaveRAM;*.v2.sav;*.st*;*.m64p;*.zip;*.pj.zip;*.pj;*.bin
 SRA_Filter=SRA-Dateien (*.sra)|*.sra
 PC_Filter=PC-Port-Speicherdateien (*.sav)|*.sav
 GCI_Filter=GCI-Dateien (*.gci)|*.gci
 SRM_Filter=SRM-Dateien (*.srm;*.SaveRAM)|*.srm;*.SaveRAM
+CTR_Filter=3DS-Speicherdateien (*.bin)|*.bin
 M64_FZ_Filter=M64Plus FZ-Spielstände (*.v2.sav)|*.v2.sav
 M64_State_Filter=M64Plus-Spielstände (*.st*)|*.st*
 M64_Save_Filter=M64Plus-Speicherdateien (*.m64p)|*.m64p
@@ -34,6 +35,7 @@ New_Format=Neues Format
 Save_As=Speichern unter...
 N64Save=N64 Spielstand
 PcPortSav=PC-Port Spielstand
+CTRSave=3DS-Spielstand
 
 
 Headset=Kopfhörer

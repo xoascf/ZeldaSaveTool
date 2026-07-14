@@ -4,11 +4,12 @@ Drop_It=Drop your save file here
 Supported=Supported formats: {0}
 Version=Version {0}
 Open_First=Open a save file first!
-Supported_Filter=All Supported Files|*.sra;*.sav;*.gci;*.srm;*.SaveRAM;*.v2.sav;*.st*;*.m64p;*.zip;*.pj.zip;*.pj
+Supported_Filter=All Supported Files|*.sra;*.sav;*.gci;*.srm;*.SaveRAM;*.v2.sav;*.st*;*.m64p;*.zip;*.pj.zip;*.pj;*.bin
 SRA_Filter=SRA Files (*.sra)|*.sra
 PC_Filter=PC Port Save Files (*.sav)|*.sav
 GCI_Filter=GCI Files (*.gci)|*.gci
 SRM_Filter=SRM Files (*.srm;*.SaveRAM)|*.srm;*.SaveRAM
+CTR_Filter=3DS Save Files (*.bin)|*.bin
 M64_FZ_Filter=M64Plus FZ Save States (*.v2.sav)|*.v2.sav
 M64_State_Filter=M64Plus Save States (*.st*)|*.st*
 M64_Save_Filter=M64Plus Save Files (*.m64p)|*.m64p
@@ -34,6 +35,7 @@ New_Format=New Format
 Save_As=Save As...
 N64Save=N64 Save
 PcPortSav=PC Port Save
+CTRSave=3DS Save
 
 
 

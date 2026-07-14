@@ -5,7 +5,7 @@ using ZeldaSaveTool.Utility;
 namespace ZeldaSaveTool.Save;
 
 internal class File /* format */ {
-	public enum Format { N64Save, PcPortSav }
+	public enum Format { N64Save, PcPortSav, CTRSave }
 	public enum Sound { Stereo, Mono, Headset, Surround }
 	public enum ZTargeting { Switch, Hold } // Target mode
 
@@ -65,6 +65,7 @@ internal class File /* format */ {
 	private bool IsOpenOotSave { get; set; }
 	private bool IsGCISave { get; set; }
 	private bool IsSRMSave { get; set; }
+	private bool Is3DSSave { get; set; }
 
 	private const int MaxSize = 0x8000; // Default save file size.
 	private const int MinSize = 0x7A00; // Used in Open Ocarina.
@@ -78,9 +79,12 @@ internal class File /* format */ {
 	private const int GCISaveLength  = 0x20 + 3 * 0x1450 + 0x4;
 	private const int GCIMinFileSize = GCISaveOffset + GCISaveLength; // Minimum valid GCI size.
 
+	private const int CTRSaveSize = 0x14DC; // 3DS save file size.
+
 	private Format GetFormat(byte[] input, int length) {
 		if (length == MinSize) return Format.PcPortSav;
-		// TODO: Some sizes check was removed, so checking for this in this moment is not right.
+		if (length == CTRSaveSize) return Format.CTRSave;
+		
 		return input[0x87] == 0 ? Format.PcPortSav : Format.N64Save;
 	}
 
@@ -255,12 +259,202 @@ internal class File /* format */ {
 		}
 	}
 
+	private static readonly byte[] gItemSlots = new byte[] {
+		0, 1, 2, 3, 4, 5, 6, 7, 7, 8, 9, 9, 10, 11, 12, 13, 14, 15, 16, 17, // 0-19
+		18, 18, 18, 18, 18, 18, 18, 18, 18, 18, 18, 18, 18,                 // 20-32 (Bottles)
+		23, 23, 23, 23, 23, 23, 23, 23, 23, 23, 23, 23,                     // 33-44 (Child Trade)
+		22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22                          // 45-55 (Adult Trade)
+	};
+
+	private static Structs.Oot.ItemEquips ConvertEquips(Structs.Oot3D.ItemEquips equips3D, byte[] items64) {
+		Structs.Oot.ItemEquips equips64 = new();
+		equips64.buttonItems = new byte[4];
+		equips64.cButtonSlots = new byte[3] { 0xFF, 0xFF, 0xFF };
+
+		// B Button (Sword)
+		equips64.buttonItems[0] = equips3D.buttonItems[0] != 0xFF ? equips3D.buttonItems[0] : (byte)0xFF;
+
+		// C Buttons mapping (3DS Y, X, I, II -> N64 C-Left, C-Down, C-Right)
+		int cIndex = 1; // 1 = C-Left, 2 = C-Down, 3 = C-Right
+		for (int i = 1; i <= 4 && cIndex <= 3; i++) {
+			byte item = equips3D.buttonItems[i];
+			if (item == 0xFF) continue;
+
+			// Skip boots (Kokiri: 0x44, Iron: 0x45, Hover: 0x46)
+			if (item >= 0x44 && item <= 0x46) continue;
+			// Skip swords, shields, tunics
+			if (item >= 0x3B && item <= 0x43) continue;
+
+			// Find slot of this item in N64 items
+			byte slot = 0xFF;
+			for (byte s = 0; s < 24; s++) {
+				if (items64[s] == item) {
+					slot = s;
+					break;
+				}
+			}
+
+			if (slot != 0xFF) {
+				equips64.buttonItems[cIndex] = item;
+				equips64.cButtonSlots[cIndex - 1] = slot;
+				cIndex++;
+			}
+		}
+
+		// Fill remaining C-buttons with 0xFF
+		for (int i = cIndex; i <= 3; i++) {
+			equips64.buttonItems[i] = 0xFF;
+			equips64.cButtonSlots[i - 1] = 0xFF;
+		}
+
+		equips64.equipment = equips3D.equipment;
+		return equips64;
+	}
+
+	public static void GetN64From3DS(ref byte[] data) {
+		byte[] newData = new byte[MaxSize];
+		Structs.Oot3D.Save save3D = Reader.ByteToType<Structs.Oot3D.Save>(data, false);
+		Structs.Oot.Save save64 = new();
+
+		save64.info.playerData.newf = new byte[] { (byte)'Z', (byte)'E', (byte)'L', (byte)'D', (byte)'A', (byte)'Z' };
+		save64.info.playerData.deaths = save3D.info.playerData.deaths;
+		
+		string utf16Name = System.Text.Encoding.Unicode.GetString(save3D.info.playerData.playerName);
+		string nameStr = "";
+		for (int i = 0; i < 8; i++) {
+			char c = utf16Name.Length > i ? utf16Name[i] : ' ';
+			if (c == '\0') c = ' ';
+			nameStr += c;
+		}
+		save64.info.playerData.playerName = Charset.GetNameBytes(nameStr.TrimEnd(), false);
+
+		save64.info.playerData.healthCapacity = (short)save3D.info.playerData.healthCapacity;
+		save64.info.playerData.health = save3D.info.playerData.health;
+		save64.info.playerData.magicLevel = save3D.info.playerData.magicLevel;
+		save64.info.playerData.magic = save3D.info.playerData.magic;
+		save64.info.playerData.rupees = save3D.info.playerData.rupees;
+		save64.info.playerData.swordHealth = save3D.info.playerData.bgsHitsLeft;
+		save64.info.playerData.naviTimer = save3D.info.playerData.naviTimer;
+		save64.info.playerData.isMagicAcquired = save3D.info.playerData.isMagicAcquired;
+		save64.info.playerData.isDoubleMagicAcquired = save3D.info.playerData.isDoubleMagicAcquired;
+		save64.info.playerData.isDoubleDefenseAcquired = save3D.info.playerData.isDoubleDefenseAcquired;
+		save64.info.playerData.bgsFlag = save3D.info.playerData.bgsFlag;
+
+		save64.info.inventory.items = new byte[24];
+		for (int i = 0; i < 24; i++) {
+			byte item = save3D.info.inventory.items[i];
+			if (item == 0xFF) {
+				save64.info.inventory.items[i] = 0xFF;
+				continue;
+			}
+			
+			bool isValid = false;
+			if (item < gItemSlots.Length) {
+				int expectedSlot = gItemSlots[item];
+				if (expectedSlot == i) {
+					isValid = true;
+				} else if (expectedSlot == 18 && i >= 18 && i <= 21) {
+					// 18 is SLOT_BOTTLE_1. Bottle slots are 18, 19, 20, 21.
+					isValid = true;
+				}
+			}
+
+			if (isValid) {
+				save64.info.inventory.items[i] = item;
+			} else {
+				save64.info.inventory.items[i] = 0xFF; // Wipe invalid item
+			}
+		}
+		save64.info.inventory.ammo = save3D.info.inventory.ammo;
+		save64.info.inventory.equipment = save3D.info.inventory.equipment;
+		save64.info.inventory.upgrades = save3D.info.inventory.upgrades;
+		save64.info.inventory.questItems = save3D.info.inventory.questItems;
+		save64.info.inventory.dungeonItems = save3D.info.inventory.dungeonItems;
+		save64.info.inventory.dungeonKeys = save3D.info.inventory.dungeonKeys;
+		save64.info.inventory.defenseHearts = save3D.info.inventory.defenseHearts;
+		save64.info.inventory.gsTokens = save3D.info.inventory.gsTokens;
+
+		save64.info.sceneFlags = new uint[868];
+		for (int i = 0; i < 124; i++) {
+			save64.info.sceneFlags[i * 7 + 0] = save3D.info.sceneFlags[i].chest;
+			save64.info.sceneFlags[i * 7 + 1] = save3D.info.sceneFlags[i].swch;
+			save64.info.sceneFlags[i * 7 + 2] = save3D.info.sceneFlags[i].clear;
+			save64.info.sceneFlags[i * 7 + 3] = save3D.info.sceneFlags[i].collect;
+			save64.info.sceneFlags[i * 7 + 4] = save3D.info.sceneFlags[i].unk;
+			save64.info.sceneFlags[i * 7 + 5] = save3D.info.sceneFlags[i].rooms1;
+			save64.info.sceneFlags[i * 7 + 6] = save3D.info.sceneFlags[i].rooms2;
+		}
+
+		save64.entranceIndex = save3D.info.playerData.entranceIndex;
+		save64.linkAge = save3D.info.playerData.linkAge;
+		save64.cutsceneIndex = save3D.info.playerData.cutsceneIndex;
+		save64.dayTime = save3D.info.playerData.dayTime;
+		save64.nightFlag = save3D.info.playerData.nightFlag;
+		save64.totalDays = save3D.info.playerData.unk_14;
+		save64.bgsDayCount = save3D.info.playerData.unk_18;
+
+		save64.info.playerData.savedSceneId = (short)save3D.info.playerData.savedSceneId;
+		save64.info.playerData.childEquips = ConvertEquips(save3D.info.playerData.childEquips, save64.info.inventory.items);
+		save64.info.playerData.adultEquips = ConvertEquips(save3D.info.playerData.adultEquips, save64.info.inventory.items);
+		save64.info.equips = ConvertEquips(save3D.info.equips, save64.info.inventory.items);
+
+		save64.info.eventChkInf = save3D.info.eventChkInf;
+		save64.info.itemGetInf = save3D.info.itemGetInf;
+		save64.info.infTable = save3D.info.infTable;
+		save64.info.worldMapAreaData = save3D.info.worldMapAreaData;
+
+		save64.info.highScores = new int[7];
+		save64.info.highScores[0] = (int)save3D.info.horsebackArcheryHighscore;
+		save64.info.highScores[1] = BitConverter.ToInt32(save3D.info.unk_ED4, 0);
+		save64.info.highScores[2] = BitConverter.ToInt32(save3D.info.unk_ED4, 4);
+		save64.info.highScores[3] = (int)save3D.info.horseRaceRecordTime;
+		save64.info.highScores[4] = (int)save3D.info.marathonRaceRecordTime;
+		save64.info.highScores[5] = BitConverter.ToInt32(save3D.info.unk_EE4, 0);
+		save64.info.highScores[6] = BitConverter.ToInt32(save3D.info.unk_EE4, 4);
+
+		byte[] gsFlagsBytes = new byte[28];
+		Array.Copy(save3D.info.gsFlags, 0, gsFlagsBytes, 0, 22);
+		Array.Copy(save3D.info.unk_ECA, 0, gsFlagsBytes, 22, 6);
+
+		save64.info.gsFlags = new int[6];
+		for (int i = 0; i < 6; i++) {
+			save64.info.gsFlags[i] = BitConverter.ToInt32(gsFlagsBytes, i * 4);
+		}
+		save64.info.unk_EB4 = new byte[4];
+		Array.Copy(gsFlagsBytes, 24, save64.info.unk_EB4, 0, 4);
+		save64.info.fw = new Structs.Oot.FaroresWindData {
+			pos = new Structs.Oot.Vec3i {
+				x = save3D.info.fw.pos != null && save3D.info.fw.pos.Length >= 3 ? save3D.info.fw.pos[0] : 0,
+				y = save3D.info.fw.pos != null && save3D.info.fw.pos.Length >= 3 ? save3D.info.fw.pos[1] : 0,
+				z = save3D.info.fw.pos != null && save3D.info.fw.pos.Length >= 3 ? save3D.info.fw.pos[2] : 0,
+			},
+			yaw = save3D.info.fw.yaw,
+			playerParams = save3D.info.fw.playerParams,
+			entranceIndex = save3D.info.fw.entranceIndex,
+			roomIndex = save3D.info.fw.roomIndex,
+			set = save3D.info.fw.set,
+			tempSwchFlags = save3D.info.fw.tempSwchFlags,
+			tempCollectFlags = save3D.info.fw.tempCollectFlags
+		};
+
+		// Initialize required arrays to prevent Marshal crashing or garbage data
+		save64.info.unk_E8C = new byte[0x10];
+		save64.info.unk_F34 = new byte[4];
+		save64.info.unk_F3C = new byte[4];
+
+		byte[] save64Bytes = Reader.TypeToByte(save64, true);
+		Array.Copy(save64Bytes, 0, newData, 0x20, save64Bytes.Length);
+		data = newData;
+	}
+
 	public byte[] PreConvert(byte[] data) {
 		int length = data.Length;
 		if (length == MinSize)
 			IsOpenOotSave = true;
 		else if (length == SRMSize)
 			IsSRMSave = true;
+		else if (length == CTRSaveSize)
+			Is3DSSave = true;
 		else if ((length - GCIHeaderSize) % GCIBlockSize == 0 && length >= GCIMinFileSize)
 			IsGCISave = true;
 
@@ -268,6 +462,8 @@ internal class File /* format */ {
 			GetN64FromGCI(ref data);
 		else if (IsSRMSave)
 			GetN64FromSRM(ref data);
+		else if (Is3DSSave)
+			GetN64From3DS(ref data);
 		else {
 			bool wasLarger = data.Length > MaxSize;
 			SramCandidate candidate = ExtractSramFromRamDump(data);
@@ -281,6 +477,9 @@ internal class File /* format */ {
 
 		if (IsOpenOotSave)
 			Array.Resize(ref data, MaxSize);
+
+		if (data.Length < MaxSize)
+			return data; // Let HasValidSize reject it later without crashing
 
 		// Determine the format early so that ToNTSC evaluates correctly for FixName
 		FormatUsed = GetFormat(data, length);

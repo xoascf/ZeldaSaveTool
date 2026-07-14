@@ -66,7 +66,7 @@ namespace ZeldaSaveTool
 			this.lblNote.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 			this.lblNote.Location = new System.Drawing.Point(0, 0);
 			this.lblNote.Name = "lblNote";
-			this.lblNote.Size = new System.Drawing.Size(374, 132);
+			this.lblNote.Size = new System.Drawing.Size(374, 111);
 			this.lblNote.TabIndex = 0;
 			this.lblNote.Text = "Drop_It";
 			this.lblNote.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
@@ -76,7 +76,7 @@ namespace ZeldaSaveTool
 			// 
 			this.lblNoteHint.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
 			| System.Windows.Forms.AnchorStyles.Right)));
-			this.lblNoteHint.Location = new System.Drawing.Point(0, 79);
+			this.lblNoteHint.Location = new System.Drawing.Point(0, 88);
 			this.lblNoteHint.Name = "lblNoteHint";
 			this.lblNoteHint.Size = new System.Drawing.Size(374, 23);
 			this.lblNoteHint.TabIndex = 1;
@@ -113,7 +113,8 @@ namespace ZeldaSaveTool
 			// 
 			this.lblSupported.AutoSize = true;
 			this.lblSupported.ForeColor = System.Drawing.SystemColors.GrayText;
-			this.lblSupported.Location = new System.Drawing.Point(13, 119);
+			this.lblSupported.Location = new System.Drawing.Point(12, 111);
+			this.lblSupported.MaximumSize = new System.Drawing.Size(300, 0);
 			this.lblSupported.Name = "lblSupported";
 			this.lblSupported.Size = new System.Drawing.Size(56, 13);
 			this.lblSupported.TabIndex = 3;
