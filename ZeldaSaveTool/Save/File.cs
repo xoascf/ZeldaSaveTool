@@ -5,9 +5,10 @@ using ZeldaSaveTool.Utility;
 namespace ZeldaSaveTool.Save;
 
 internal class File /* format */ {
-	public enum Format { N64Save, PcPortSav, CTRSave }
+	public enum Format { N64Emu, N64Console, PcPortSav, CTRSave, SohJson }
 	public enum Sound { Stereo, Mono, Headset, Surround }
 	public enum ZTargeting { Switch, Hold } // Target mode
+	private bool IsSohJsonSave { get; set; }
 
 	public Format? FormatUsed { get; set; }
 	public Format? FormatExport { get; set; }
@@ -82,10 +83,11 @@ internal class File /* format */ {
 	private const int CTRSaveSize = 0x14DC; // 3DS save file size.
 
 	private Format GetFormat(byte[] input, int length) {
+		if (IsSohJsonSave) return Format.SohJson;
 		if (length == MinSize) return Format.PcPortSav;
 		if (length == CTRSaveSize) return Format.CTRSave;
 		
-		return input[0x87] == 0 ? Format.PcPortSav : Format.N64Save;
+		return input[0x87] == 0 ? Format.PcPortSav : Format.N64Emu;
 	}
 
 	public bool HasValidSize(int length) {
@@ -449,7 +451,10 @@ internal class File /* format */ {
 
 	public byte[] PreConvert(byte[] data) {
 		int length = data.Length;
-		if (length == MinSize)
+		bool isJson = IsJson(data);
+		if (isJson)
+			IsSohJsonSave = true;
+		else if (length == MinSize)
 			IsOpenOotSave = true;
 		else if (length == SRMSize)
 			IsSRMSave = true;
@@ -464,6 +469,8 @@ internal class File /* format */ {
 			GetN64FromSRM(ref data);
 		else if (Is3DSSave)
 			GetN64From3DS(ref data);
+		else if (IsSohJsonSave)
+			GetN64FromSohJson(ref data);
 		else {
 			bool wasLarger = data.Length > MaxSize;
 			SramCandidate candidate = ExtractSramFromRamDump(data);
@@ -488,9 +495,9 @@ internal class File /* format */ {
 		Slot2.Name = Charset.GetReadableName(data.Get(0x1494, 8));
 		Slot3.Name = Charset.GetReadableName(data.Get(0x28E4, 8));
 
-		FixName(ref data, 0x0044, FormatUsed == Format.N64Save);
-		FixName(ref data, 0x1494, FormatUsed == Format.N64Save);
-		FixName(ref data, 0x28E4, FormatUsed == Format.N64Save);
+		FixName(ref data, 0x0044, FormatUsed == Format.N64Emu || FormatUsed == Format.N64Console);
+		FixName(ref data, 0x1494, FormatUsed == Format.N64Emu || FormatUsed == Format.N64Console);
+		FixName(ref data, 0x28E4, FormatUsed == Format.N64Emu || FormatUsed == Format.N64Console);
 
 		return data;
 	}
@@ -562,8 +569,10 @@ internal class File /* format */ {
 		if (OverwriteBackups)
 			_saveData = CopyBackupSaves(_saveData);
 
-		if (FormatExport == Format.N64Save)
+		if (FormatExport == Format.N64Emu)
 			_saveData.DataTo(ByteOrder.LittleEndian, 0, MaxSize);
+		else if (FormatExport == Format.N64Console)
+			_saveData.DataTo(ByteOrder.BigEndian, 0, MaxSize);
 
 		return _saveData;
 	}
@@ -636,5 +645,240 @@ internal class File /* format */ {
 		saveBytes.Set(0x65B0, save3);
 
 		return saveBytes;
+	}
+
+	private void GetN64FromSohJson(ref byte[] data) {
+		string jsonString = System.Text.Encoding.UTF8.GetString(data);
+		var root = LiteJsonParser.Parse(jsonString) as Dictionary<string, object>;
+		if (root == null)
+			throw new InvalidOperationException("Invalid JSON save file");
+
+		if (!root.TryGetValue("sections", out object? sectionsObj) || !(sectionsObj is Dictionary<string, object> sections))
+			throw new InvalidOperationException("JSON save file is missing 'sections'");
+
+		if (!sections.TryGetValue("base", out object? baseObj) || !(baseObj is Dictionary<string, object> baseSection))
+			throw new InvalidOperationException("JSON save file is missing 'sections.base'");
+
+		if (!baseSection.TryGetValue("data", out object? dataObj) || !(dataObj is Dictionary<string, object> gameData))
+			throw new InvalidOperationException("JSON save file is missing 'sections.base.data'");
+
+		byte[] newData = new byte[MaxSize];
+		Structs.Oot.Save save = new();
+
+		// Root fields of Save
+		save.entranceIndex = GetVal<int>(gameData, "entranceIndex");
+		save.linkAge = GetVal<int>(gameData, "linkAge");
+		save.cutsceneIndex = GetVal<int>(gameData, "cutsceneIndex");
+		save.dayTime = GetVal<ushort>(gameData, "dayTime");
+		save.nightFlag = GetVal<int>(gameData, "nightFlag");
+		save.totalDays = GetVal<int>(gameData, "totalDays");
+		save.bgsDayCount = GetVal<int>(gameData, "bgsDayCount");
+
+		// SavePlayerData
+		save.info.playerData.newf = new byte[] { (byte)'Z', (byte)'E', (byte)'L', (byte)'D', (byte)'A', (byte)'Z' };
+		save.info.playerData.deaths = GetVal<ushort>(gameData, "deaths");
+		save.info.playerData.playerName = GetArray<byte>(gameData, "playerName", 8);
+		save.info.playerData.n64ddFlag = GetVal<short>(gameData, "n64ddFlag");
+		save.info.playerData.healthCapacity = GetVal<short>(gameData, "healthCapacity");
+		save.info.playerData.health = GetVal<short>(gameData, "health");
+		save.info.playerData.magicLevel = GetVal<sbyte>(gameData, "magicLevel");
+		save.info.playerData.magic = GetVal<sbyte>(gameData, "magic");
+		save.info.playerData.rupees = GetVal<short>(gameData, "rupees");
+		save.info.playerData.swordHealth = GetVal<ushort>(gameData, "swordHealth");
+		save.info.playerData.naviTimer = GetVal<ushort>(gameData, "naviTimer");
+		save.info.playerData.isMagicAcquired = gameData.ContainsKey("isMagicAcquired") ? GetVal<byte>(gameData, "isMagicAcquired") : GetVal<byte>(gameData, "magicAcquired");
+		save.info.playerData.isDoubleMagicAcquired = gameData.ContainsKey("isDoubleMagicAcquired") ? GetVal<byte>(gameData, "isDoubleMagicAcquired") : GetVal<byte>(gameData, "doubleMagic");
+		save.info.playerData.isDoubleDefenseAcquired = gameData.ContainsKey("isDoubleDefenseAcquired") ? GetVal<byte>(gameData, "isDoubleDefenseAcquired") : GetVal<byte>(gameData, "doubleDefense");
+		save.info.playerData.bgsFlag = GetVal<byte>(gameData, "bgsFlag");
+		save.info.playerData.ocarinaGameRoundNum = GetVal<byte>(gameData, "ocarinaGameRoundNum");
+
+		save.info.playerData.unk_3B = new byte[1];
+		save.info.playerData.unk_54 = GetVal<uint>(gameData, "unk_54");
+		save.info.playerData.unk_58 = new byte[0x0E];
+		save.info.playerData.savedSceneId = GetVal<short>(gameData, "savedSceneNum");
+
+		// Equips
+		var childEquipsDict = GetDict(gameData, "childEquips");
+		save.info.playerData.childEquips.buttonItems = GetArray<byte>(childEquipsDict, "buttonItems", 4);
+		save.info.playerData.childEquips.cButtonSlots = GetArray<byte>(childEquipsDict, "cButtonSlots", 3);
+		save.info.playerData.childEquips.equipment = GetVal<ushort>(childEquipsDict, "equipment");
+
+		var adultEquipsDict = GetDict(gameData, "adultEquips");
+		save.info.playerData.adultEquips.buttonItems = GetArray<byte>(adultEquipsDict, "buttonItems", 4);
+		save.info.playerData.adultEquips.cButtonSlots = GetArray<byte>(adultEquipsDict, "cButtonSlots", 3);
+		save.info.playerData.adultEquips.equipment = GetVal<ushort>(adultEquipsDict, "equipment");
+
+		var equipsDict = GetDict(gameData, "equips");
+		save.info.equips.buttonItems = GetArray<byte>(equipsDict, "buttonItems", 4);
+		save.info.equips.cButtonSlots = GetArray<byte>(equipsDict, "cButtonSlots", 3);
+		save.info.equips.equipment = GetVal<ushort>(equipsDict, "equipment");
+
+		// Inventory
+		var invDict = GetDict(gameData, "inventory");
+		save.info.inventory.items = GetArray<byte>(invDict, "items", 24);
+		save.info.inventory.ammo = GetArray<sbyte>(invDict, "ammo", 16);
+		save.info.inventory.equipment = GetVal<ushort>(invDict, "equipment");
+		save.info.inventory.upgrades = GetVal<uint>(invDict, "upgrades");
+		save.info.inventory.questItems = GetVal<uint>(invDict, "questItems");
+		save.info.inventory.dungeonItems = GetArray<byte>(invDict, "dungeonItems", 20);
+		save.info.inventory.dungeonKeys = GetArray<sbyte>(invDict, "dungeonKeys", 19);
+		save.info.inventory.defenseHearts = GetVal<sbyte>(invDict, "defenseHearts");
+		save.info.inventory.gsTokens = GetVal<short>(invDict, "gsTokens");
+
+		// Scene Flags
+		save.info.sceneFlags = new uint[868];
+		if (gameData.TryGetValue("sceneFlags", out object? sfVal) && sfVal is List<object> sfList) {
+			for (int i = 0; i < Math.Min(124, sfList.Count); i++) {
+				if (sfList[i] is Dictionary<string, object> sfDict) {
+					save.info.sceneFlags[i * 7 + 0] = GetVal<uint>(sfDict, "chest");
+					save.info.sceneFlags[i * 7 + 1] = GetVal<uint>(sfDict, "swch");
+					save.info.sceneFlags[i * 7 + 2] = GetVal<uint>(sfDict, "clear");
+					save.info.sceneFlags[i * 7 + 3] = GetVal<uint>(sfDict, "collect");
+					save.info.sceneFlags[i * 7 + 4] = GetVal<uint>(sfDict, "unk");
+					save.info.sceneFlags[i * 7 + 5] = GetVal<uint>(sfDict, "rooms");
+					save.info.sceneFlags[i * 7 + 6] = GetVal<uint>(sfDict, "floors");
+				}
+			}
+		}
+
+		// Farore's Wind
+		var fwDict = GetDict(gameData, "fw");
+		if (fwDict != null) {
+			var fwPosDict = GetDict(fwDict, "pos");
+			save.info.fw.pos.x = GetVal<int>(fwPosDict, "x");
+			save.info.fw.pos.y = GetVal<int>(fwPosDict, "y");
+			save.info.fw.pos.z = GetVal<int>(fwPosDict, "z");
+			save.info.fw.yaw = GetVal<int>(fwDict, "yaw");
+			save.info.fw.playerParams = GetVal<int>(fwDict, "playerParams");
+			save.info.fw.entranceIndex = GetVal<int>(fwDict, "entranceIndex");
+			save.info.fw.roomIndex = GetVal<int>(fwDict, "roomIndex");
+			save.info.fw.set = GetVal<int>(fwDict, "set");
+			save.info.fw.tempSwchFlags = GetVal<int>(fwDict, "tempSwchFlags");
+			save.info.fw.tempCollectFlags = GetVal<int>(fwDict, "tempCollectFlags");
+		}
+
+		// Arrays
+		save.info.gsFlags = GetArray<int>(gameData, "gsFlags", 6);
+		save.info.highScores = GetArray<int>(gameData, "highScores", 7);
+		save.info.eventChkInf = GetArray<ushort>(gameData, "eventChkInf", 14);
+		save.info.itemGetInf = GetArray<ushort>(gameData, "itemGetInf", 4);
+		save.info.infTable = GetArray<ushort>(gameData, "infTable", 30);
+
+		// Scarecrow Songs
+		save.info.scarecrowLongSong = MapScarecrowSong(gameData, "scarecrowLongSong", "scarecrowCustomSong", 0x360);
+		save.info.scarecrowSpawnSong = MapScarecrowSong(gameData, "scarecrowSpawnSong", "scarecrowSpawnSong", 0x80);
+		save.info.scarecrowLongSongSet = gameData.ContainsKey("scarecrowLongSongSet") ? GetVal<byte>(gameData, "scarecrowLongSongSet") : GetVal<byte>(gameData, "scarecrowCustomSongSet");
+		save.info.scarecrowSpawnSongSet = GetVal<byte>(gameData, "scarecrowSpawnSongSet");
+
+		// Horse Data
+		var hdDict = GetDict(gameData, "horseData");
+		if (hdDict != null) {
+			save.info.horseData.sceneId = GetVal<short>(hdDict, "scene");
+			var hdPosDict = GetDict(hdDict, "pos");
+			save.info.horseData.pos.x = GetVal<short>(hdPosDict, "x");
+			save.info.horseData.pos.y = GetVal<short>(hdPosDict, "y");
+			save.info.horseData.pos.z = GetVal<short>(hdPosDict, "z");
+			save.info.horseData.angle = GetVal<short>(hdDict, "angle");
+		}
+
+		// worldMapAreaData
+		save.info.worldMapAreaData = GetVal<uint>(gameData, "worldMapAreaData");
+
+		// unk arrays
+		save.info.unk_E8C = new byte[0x10];
+		save.info.unk_EB4 = new byte[4];
+		save.info.unk_F34 = new byte[4];
+		save.info.unk_F3C = new byte[4];
+		save.info.unk_12A1 = new byte[0x24];
+		save.info.unk_1346 = new byte[2];
+
+		byte[] saveBytes = Reader.TypeToByte(save, true);
+		Array.Copy(saveBytes, 0, newData, 0x20, saveBytes.Length);
+		data = newData;
+	}
+
+	private static bool IsJson(byte[] data) {
+		if (data == null || data.Length == 0) return false;
+		int i = 0;
+		while (i < data.Length && (data[i] == 0xEF || data[i] == 0xBB || data[i] == 0xBF || char.IsWhiteSpace((char)data[i]))) {
+			i++;
+		}
+		return i < data.Length && data[i] == '{';
+	}
+
+	private static T GetVal<T>(Dictionary<string, object>? dict, string key, T defaultValue = default) {
+		if (dict == null || !dict.TryGetValue(key, out object? val) || val == null)
+			return defaultValue;
+		try {
+			if (val is T t)
+				return t;
+			if (val is bool b) {
+				object convertedBool = b ? 1 : 0;
+				return (T)System.Convert.ChangeType(convertedBool, typeof(T));
+			}
+			return (T)System.Convert.ChangeType(val, typeof(T));
+		} catch {
+			return defaultValue;
+		}
+	}
+
+	private static T[] GetArray<T>(Dictionary<string, object>? dict, string key, int size) {
+		T[] result = new T[size];
+		if (dict == null || !dict.TryGetValue(key, out object? val) || val == null)
+			return result;
+
+		if (val is List<object> list) {
+			for (int i = 0; i < Math.Min(size, list.Count); i++) {
+				if (list[i] != null) {
+					try {
+						result[i] = (T)System.Convert.ChangeType(list[i], typeof(T));
+					} catch {
+						// Keep default
+					}
+				}
+			}
+		}
+		return result;
+	}
+
+	private static Dictionary<string, object>? GetDict(Dictionary<string, object>? dict, string key) {
+		if (dict != null && dict.TryGetValue(key, out object? val) && val is Dictionary<string, object> result)
+			return result;
+		return null;
+	}
+
+	private static byte[] MapScarecrowSong(Dictionary<string, object> dict, string modernKey, string legacyKey, int expectedSize) {
+		byte[] result = new byte[expectedSize];
+		string key = dict.ContainsKey(modernKey) ? modernKey : legacyKey;
+
+		if (!dict.TryGetValue(key, out object? val) || val == null)
+			return result;
+
+		if (val is List<object> list) {
+			for (int i = 0; i < list.Count; i++) {
+				if (list[i] is Dictionary<string, object> note) {
+					int noteSize = 8;
+					if (i * noteSize >= expectedSize)
+						break;
+					result[i * noteSize + 0] = GetVal<byte>(note, "noteIdx");
+					result[i * noteSize + 1] = GetVal<byte>(note, "unk_01");
+					result[i * noteSize + 2] = GetVal<byte>(note, "unk_02");
+					result[i * noteSize + 3] = GetVal<byte>(note, "volume");
+					result[i * noteSize + 4] = GetVal<byte>(note, "vibrato");
+					result[i * noteSize + 5] = GetVal<byte>(note, "tone");
+					result[i * noteSize + 6] = GetVal<byte>(note, "semitone");
+					result[i * noteSize + 7] = 0; // Padding
+				} else {
+					if (i >= expectedSize)
+						break;
+					try {
+						result[i] = (byte)System.Convert.ChangeType(list[i], typeof(byte));
+					} catch {
+						result[i] = 0;
+					}
+				}
+			}
+		}
+		return result;
 	}
 }

@@ -60,22 +60,27 @@ There is no public release yet, but you can download the latest builds via https
 == Usage
 Drop your save file into the program window, choose your target format, and specify where to save the converted file. The program will automatically detect your input format!
 
-== Supported Formats
-* Emulator save files (*.sra) from any version of the NTSC and PAL releases of the original game.
-* PC Port save files (*.sav) for {uri-gh}/blawar/ooot[Open Ocarina^] (oot.sav) and {uri-gh}/HarbourMasters/Shipwright[Ship of Harkinian^] (only Deckard Alfa 1.0.0 and Roy Alfa 2.0.0) (oot_save.sav).
-* Dolphin save files (*.gci).
-* RetroArch and other Libretro SaveRAM files (*.srm, *.SaveRAM).
-* Mupen64Plus and Mupen64Plus FZ saves and states (*.v2.sav, *.st*, *.m64p).
-* Project64 save states (*.pj).
-* 3DS save files (*.bin).
-* Compressed save files and states (*.zip, *.pj.zip).
+== Import Supported Formats
+* Emulator save files (`*.sra`) from any version of the NTSC and PAL releases of the original game.
+* PC Port save files (`*.sav`, `file*.sav`) for {uri-gh}/blawar/ooot[Open Ocarina^] (`oot.sav`) and {uri-gh}/HarbourMasters/Shipwright[Ship of Harkinian^] (binary `oot_save.sav` and JSON format).
+* Dolphin save files (`*.gci`).
+* RetroArch and other Libretro SaveRAM files (`*.srm`, `*.SaveRAM`).
+* Mupen64Plus and Mupen64Plus FZ saves and states (`*.m64p`, `*.st*`, `*.v2.sav`).
+* Project64 save states (`*.pj`).
+* Compressed save files and states (`*.zip`, `*.pj.zip`).
+* 3DS save files (`*.bin`).
+
+== Export Supported Formats
+* PC port `.sav` (binary for OOOT and SoH first two versions; newer versions will automatically convert it to JSON).
+* N64 emulator save format (Little Endian).
+* N64 console save format (Big Endian).
 
 == Notes
 This program is still experimental, and may not keep some items or progress of certain dungeons when converting saves, please report any related problems by {uri-repo}/issues/new/choose[submitting an issue^].
 
 * *Ship of Harkinian*: Save the converted file directly to the game's root directory (where `soh.exe` is located) as `oot_save.sav`. Do NOT save it in the saves folder as `file1.sav` or `global.sav`. The game will automatically update it to its newer JSON format upon loading.
-* *3DS Saves*: When converting from 3DS save files (*.bin), the death count is not preserved (it is replaced by the save count).
-* *Regions*: Make sure to select the correct region for the ROM used, otherwise Japanese characters or squares may appear in the player names.
+* *3DS Saves*: When converting from 3DS save files (`*.bin`), the death count is not preserved (it is replaced by the save count).
+* *Regions*: Select the correct region matching the ROM used (for the console itself, emulators or the PC Port), otherwise Japanese characters or squares may appear in player names.
 
 == How it works
 {proj-name} determines the byte order of the save file, corrects the name so that it can be exported for NTSC or PAL and converts it to the specified format for the PC Port, emulator, etc.

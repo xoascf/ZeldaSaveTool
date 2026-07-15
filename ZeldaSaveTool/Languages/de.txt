@@ -7,6 +7,7 @@ Open_First=Öffne zuerst eine Spielstandsdatei!
 Supported_Filter=Alle unterstützten Dateien|*.sra;*.sav;*.gci;*.srm;*.SaveRAM;*.v2.sav;*.st*;*.m64p;*.zip;*.pj.zip;*.pj;*.bin
 SRA_Filter=SRA-Dateien (*.sra)|*.sra
 PC_Filter=PC-Port-Speicherdateien (*.sav)|*.sav
+SOH_Filter=Ship of Harkinian-JSON-Speicherdateien (file*.sav)|file*.sav
 GCI_Filter=GCI-Dateien (*.gci)|*.gci
 SRM_Filter=SRM-Dateien (*.srm;*.SaveRAM)|*.srm;*.SaveRAM
 CTR_Filter=3DS-Speicherdateien (*.bin)|*.bin
@@ -34,8 +35,11 @@ New_Format=Neues Format
 
 Save_As=Speichern unter...
 N64Save=N64 Spielstand
+N64Emu=N64 Spielstand (Emulator / LE)
+N64Console=N64 Spielstand (Konsole / BE)
 PcPortSav=PC-Port Spielstand
 CTRSave=3DS-Spielstand
+SohJson=SoH-JSON-Spielstand
 
 
 Headset=Kopfhörer

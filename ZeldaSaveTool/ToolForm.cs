@@ -31,7 +31,7 @@ public partial class ToolForm : Form {
 
 		lblVersion.Text = T("Version", PVer);
 		lblSupported.Text = T("Supported", ".sra, .sav, .gci, .srm, .SaveRAM, .v2.sav, .st*, .m64p, .zip, .pj.zip, .pj, .bin");
-		cmbFormat.Localize(new[] { File.Format.N64Save, File.Format.PcPortSav }, (int)File.Format.PcPortSav);
+		cmbFormat.Localize(new[] { File.Format.N64Emu, File.Format.N64Console, File.Format.PcPortSav }, (int)File.Format.PcPortSav);
 		cmbSound.Localize(Enum.GetValues(typeof(File.Sound)));
 		cmbZTarget.Localize(Enum.GetValues(typeof(File.ZTargeting)));
 	}
@@ -102,7 +102,11 @@ public partial class ToolForm : Form {
 		if (_save != null && _srcSaveName.Length != 0) {
 			splEditors.Enabled = true;
 			lblNote.Text = _srcSaveName;
-			lblNoteHint.Text = T("Hint_Format", T(_save.FormatUsed.ToString()!));
+			string formatStr = _save.FormatUsed.ToString()!;
+			if (_save.FormatUsed == File.Format.N64Emu || _save.FormatUsed == File.Format.N64Console)
+				formatStr = "N64Save";
+
+			lblNoteHint.Text = T("Hint_Format", T(formatStr));
 			return;
 		}
 
@@ -126,6 +130,7 @@ public partial class ToolForm : Form {
 		openFileDlg.Filter = T("Supported_Filter") + @"|" +
 							 T("SRA_Filter") + @"|" +
 							 T("PC_Filter") + @"|" +
+							 T("SOH_Filter") + @"|" +
 							 T("GCI_Filter") + @"|" +
 							 T("SRM_Filter") + @"|" +
 							 T("CTR_Filter") + @"|" +
@@ -162,7 +167,7 @@ public partial class ToolForm : Form {
 		const string sohFn = "oot_save";
 		string sraFf = T("SRA_Filter") + "|" + T("All_Filter");
 		string pcFf = T("PC_Filter") + "|" + T("All_Filter");
-		bool isSavingForN64 = _save?.FormatExport == File.Format.N64Save;
+		bool isSavingForN64 = _save?.FormatExport == File.Format.N64Emu || _save?.FormatExport == File.Format.N64Console;
 		using SaveFileDialog savDlg = new();
 		savDlg.Title = T("Save_As_Title", _srcSaveName);
 		savDlg.FileName = isSavingForN64 ? sraFn : sohFn;
@@ -202,7 +207,7 @@ public partial class ToolForm : Form {
 
 	private void Format_SelectedIndexChanged(object sender, EventArgs e) {
 		File.Format format = (File.Format)cmbFormat.SelectedIndex;
-		if (format == File.Format.N64Save) {
+		if (format == File.Format.N64Emu || format == File.Format.N64Console) {
 			chkDebug.Enabled = true;
 			grpRegion.Enabled = true;
 		} else {

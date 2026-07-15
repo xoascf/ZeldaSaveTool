@@ -1,4 +1,4 @@
-[Zelda Save Tool Translation File - 中文]
+﻿[Zelda Save Tool Translation File - 中文]
 Title=OoT 保存转换器
 Drop_It=将您的保存文件拖放到此处
 Supported=支持的格式: {0}
@@ -7,6 +7,7 @@ Open_First=首先打开保存文件!
 Supported_Filter=所有支持的文件|*.sra;*.sav;*.gci;*.srm;*.SaveRAM;*.v2.sav;*.st*;*.m64p;*.zip;*.pj.zip;*.pj;*.bin
 SRA_Filter=SRA 文件 (*.sra)|*.sra
 PC_Filter=电脑端口保存的文件 (*.sav)|*.sav
+SOH_Filter=Ship of Harkinian JSON 存档 (file*.sav)|file*.sav
 GCI_Filter=GCI 文件 (*.gci)|*.gci
 SRM_Filter=SRM 文件 (*.srm;*.SaveRAM)|*.srm;*.SaveRAM
 CTR_Filter=3DS 存档文件 (*.bin)|*.bin
@@ -34,8 +35,11 @@ Region=地区
 Quest=任务
 Save_As=保存为...
 N64Save=N64保存
+N64Emu=N64保存 (模拟器 / LE)
+N64Console=N64保存 (主机 / BE)
 PcPortSav=PC端口保存
 CTRSave=3DS保存
+SohJson=SoH JSON存档
 Sound=声音
 Stereo=立体声
 Headset=耳机
