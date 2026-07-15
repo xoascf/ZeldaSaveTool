@@ -3,7 +3,7 @@
 namespace ZeldaSaveTool;
 
 internal class Strings {
-	public const string Ver = "0.7.0";
+	public const string Ver = "0.7.1";
 	public const string PVer = $"{Ver}b";
 	public const string PName = "Zelda Save Tool";
 

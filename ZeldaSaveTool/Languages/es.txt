@@ -48,3 +48,4 @@ Switch=Cambiar
 Hold=Mantener
 Is_Debug=Versión "Debug"
 Hint_Access=(o haga doble clic)
+Scarecrow=Son del espantapájaros

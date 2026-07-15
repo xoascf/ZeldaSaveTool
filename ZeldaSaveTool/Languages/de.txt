@@ -48,3 +48,4 @@ Switch=Einmal
 Hold=Halten
 Is_Debug="Debug"-Version
 Hint_Access=(oder Doppelklick)
+Scarecrow=Vogelscheuchen-Polka

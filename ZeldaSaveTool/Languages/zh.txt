@@ -51,3 +51,4 @@ Hint_Access=(或双击)
 Hint_Format=({0})
 Mono=单声道
 Surround=环绕声
+Scarecrow=稻草人之歌

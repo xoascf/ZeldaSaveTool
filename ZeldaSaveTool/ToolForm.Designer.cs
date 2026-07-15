@@ -149,7 +149,7 @@ namespace ZeldaSaveTool
 			this.splEditors.Panel2.Controls.Add(this.lblSound);
 			this.splEditors.Panel2.Margin = new System.Windows.Forms.Padding(4);
 			this.splEditors.Panel2.Padding = new System.Windows.Forms.Padding(10, 10, 10, 8);
-			this.splEditors.Size = new System.Drawing.Size(374, 302);
+			this.splEditors.Size = new System.Drawing.Size(374, 350);
 			this.splEditors.SplitterDistance = 179;
 			this.splEditors.SplitterWidth = 1;
 			this.splEditors.TabIndex = 5;
@@ -158,9 +158,9 @@ namespace ZeldaSaveTool
 			// 
 			this.saveSlot3.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
 			this.saveSlot3.Dock = System.Windows.Forms.DockStyle.Top;
-			this.saveSlot3.Location = new System.Drawing.Point(10, 198);
+			this.saveSlot3.Location = new System.Drawing.Point(10, 238);
 			this.saveSlot3.Name = "saveSlot3";
-			this.saveSlot3.Size = new System.Drawing.Size(159, 94);
+			this.saveSlot3.Size = new System.Drawing.Size(159, 114);
 			this.saveSlot3.TabIndex = 7;
 			this.saveSlot3.TabStop = false;
 			this.saveSlot3.Text = "File_3";
@@ -169,9 +169,9 @@ namespace ZeldaSaveTool
 			// 
 			this.saveSlot2.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
 			this.saveSlot2.Dock = System.Windows.Forms.DockStyle.Top;
-			this.saveSlot2.Location = new System.Drawing.Point(10, 104);
+			this.saveSlot2.Location = new System.Drawing.Point(10, 124);
 			this.saveSlot2.Name = "saveSlot2";
-			this.saveSlot2.Size = new System.Drawing.Size(159, 94);
+			this.saveSlot2.Size = new System.Drawing.Size(159, 114);
 			this.saveSlot2.TabIndex = 6;
 			this.saveSlot2.TabStop = false;
 			this.saveSlot2.Text = "File_2";
@@ -182,7 +182,7 @@ namespace ZeldaSaveTool
 			this.saveSlot1.Dock = System.Windows.Forms.DockStyle.Top;
 			this.saveSlot1.Location = new System.Drawing.Point(10, 10);
 			this.saveSlot1.Name = "saveSlot1";
-			this.saveSlot1.Size = new System.Drawing.Size(159, 94);
+			this.saveSlot1.Size = new System.Drawing.Size(159, 114);
 			this.saveSlot1.TabIndex = 5;
 			this.saveSlot1.TabStop = false;
 			this.saveSlot1.Text = "File_1";
@@ -328,7 +328,7 @@ namespace ZeldaSaveTool
 			this.AllowDrop = true;
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-			this.ClientSize = new System.Drawing.Size(374, 471);
+			this.ClientSize = new System.Drawing.Size(374, 520);
 			this.Controls.Add(this.splEditors);
 			this.Controls.Add(this.lblSupported);
 			this.Controls.Add(this.llbRepo);

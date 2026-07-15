@@ -8,6 +8,8 @@ internal sealed class BasicSlot : GroupBox {
 	private readonly TextBox playerName;
 	private readonly LeadingSpinner deathCount;
 	private readonly Hearts hearts;
+	private readonly Label lblScarecrow;
+	private readonly ToolTip toolTip;
 	private Slot data;
 
 	public Slot Info {
@@ -25,6 +27,7 @@ internal sealed class BasicSlot : GroupBox {
 			hearts.TotalHealth = data.HeartsTotal;
 			hearts.CurrentHealth = data.HeartsCount;
 			hearts.IsDoubleDefense = data.DoubleDefense;
+			UpdateScarecrowText();
 		}
 	}
 
@@ -32,10 +35,12 @@ internal sealed class BasicSlot : GroupBox {
 		playerName = new TextBox();
 		deathCount = new LeadingSpinner();
 		hearts = new Hearts();
+		lblScarecrow = new Label();
+		toolTip = new ToolTip();
 
 		DoubleBuffered = true;
 		Location = new Point(0, 0);
-		Size = new Size(153, 88);
+		Size = new Size(153, 108);
 
 		Font font = new("Verdana", 9.75F, FontStyle.Regular, GraphicsUnit.Point, 0);
 
@@ -62,11 +67,30 @@ internal sealed class BasicSlot : GroupBox {
 		hearts.Click += HeartAction;
 		hearts.MouseWheel += HeartAction;
 
+		lblScarecrow.Font = new Font("Verdana", 9F, FontStyle.Regular);
+		lblScarecrow.Location = new Point(6, 83);
+		lblScarecrow.Size = new Size(141, 20);
+		lblScarecrow.TabIndex = 3;
+		lblScarecrow.Text = string.Empty;
+		lblScarecrow.Visible = false;
+
 		Controls.Add(playerName);
 		Controls.Add(deathCount);
 		Controls.Add(hearts);
+		Controls.Add(lblScarecrow);
 
 		data = new Slot();
+	}
+
+	public void UpdateScarecrowText() {
+		if (string.IsNullOrEmpty(data.ScarecrowSong)) {
+			lblScarecrow.Visible = false;
+			lblScarecrow.Text = string.Empty;
+		} else {
+			lblScarecrow.Text = "♪  " + data.ScarecrowSong;
+			lblScarecrow.Visible = true;
+			toolTip.SetToolTip(lblScarecrow, T("Scarecrow"));
+		}
 	}
 
 	private static readonly Regex NameRegex = new("[^ \\p{IsHiragana}\\p{IsKatakana}a-zA-Z0-9.-]+");

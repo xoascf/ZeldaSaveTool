@@ -34,6 +34,10 @@ public partial class ToolForm : Form {
 		cmbFormat.Localize(new[] { File.Format.N64Emu, File.Format.N64Console, File.Format.PcPortSav }, (int)File.Format.PcPortSav);
 		cmbSound.Localize(Enum.GetValues(typeof(File.Sound)));
 		cmbZTarget.Localize(Enum.GetValues(typeof(File.ZTargeting)));
+
+		saveSlot1.UpdateScarecrowText();
+		saveSlot2.UpdateScarecrowText();
+		saveSlot3.UpdateScarecrowText();
 	}
 
 	private void ToolForm_DragEnter(object sender, DragEventArgs e) {

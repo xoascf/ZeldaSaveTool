@@ -48,3 +48,4 @@ Switch=Fixe
 Hold=Maintenue
 Is_Debug=Version « Debug »
 Hint_Access=(ou double clic)
+Scarecrow=Chant de l'épouvantail

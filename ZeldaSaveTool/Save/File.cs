@@ -47,6 +47,7 @@ internal class File /* format */ {
 		Slot1.HeartsTotal = save1.info.playerData.healthCapacity;
 		Slot1.HeartsCount = save1.info.playerData.health;
 		Slot1.DoubleDefense = save1.info.playerData.isDoubleDefenseAcquired != 0;
+		Slot1.ScarecrowSong = GetScarecrowSongString(save1.info.scarecrowSpawnSongSet, save1.info.scarecrowSpawnSong);
 
 		Structs.Oot.Save save2 = Reader.ByteToType<Structs.Oot.Save>(_preConvertedData.Get(0x1470, 0x1354), be);
 
@@ -54,6 +55,7 @@ internal class File /* format */ {
 		Slot2.HeartsTotal = save2.info.playerData.healthCapacity;
 		Slot2.HeartsCount = save2.info.playerData.health;
 		Slot2.DoubleDefense = save2.info.playerData.isDoubleDefenseAcquired != 0;
+		Slot2.ScarecrowSong = GetScarecrowSongString(save2.info.scarecrowSpawnSongSet, save2.info.scarecrowSpawnSong);
 
 		Structs.Oot.Save save3 = Reader.ByteToType<Structs.Oot.Save>(_preConvertedData.Get(0x28C0, 0x1354), be);
 
@@ -61,6 +63,7 @@ internal class File /* format */ {
 		Slot3.HeartsTotal = save3.info.playerData.healthCapacity;
 		Slot3.HeartsCount = save3.info.playerData.health;
 		Slot3.DoubleDefense = save3.info.playerData.isDoubleDefenseAcquired != 0;
+		Slot3.ScarecrowSong = GetScarecrowSongString(save3.info.scarecrowSpawnSongSet, save3.info.scarecrowSpawnSong);
 	}
 
 	private bool IsOpenOotSave { get; set; }
@@ -528,6 +531,10 @@ internal class File /* format */ {
 		if (_isExtractedFromRam)
 			save1.cutsceneIndex = 0; // Prevent crash when falling back to savedSceneId from File Select
 
+		if (be != exportBe) {
+			SwapSongLengths(save1.info.scarecrowSpawnSong);
+			SwapSongLengths(save1.info.scarecrowLongSong);
+		}
 		_saveData.Set(0x20, Reader.TypeToByte(save1, exportBe));
 
 		Structs.Oot.Save save2;
@@ -541,6 +548,10 @@ internal class File /* format */ {
 		save2.info.playerData.health = Slot2.HeartsCount;
 		save2.info.playerData.isDoubleDefenseAcquired = (byte)(Slot2.DoubleDefense ? 1 : 0);
 		save2.info.inventory.defenseHearts = (sbyte)(Slot2.DoubleDefense ? 0x14 : 0x00);
+		if (be != exportBe) {
+			SwapSongLengths(save2.info.scarecrowSpawnSong);
+			SwapSongLengths(save2.info.scarecrowLongSong);
+		}
 		_saveData.Set(0x1470, Reader.TypeToByte(save2, exportBe));
 
 		Structs.Oot.Save save3;
@@ -554,6 +565,10 @@ internal class File /* format */ {
 		save3.info.playerData.health = Slot3.HeartsCount;
 		save3.info.playerData.isDoubleDefenseAcquired = (byte)(Slot3.DoubleDefense ? 1 : 0);
 		save3.info.inventory.defenseHearts = (sbyte)(Slot3.DoubleDefense ? 0x14 : 0x00);
+		if (be != exportBe) {
+			SwapSongLengths(save3.info.scarecrowSpawnSong);
+			SwapSongLengths(save3.info.scarecrowLongSong);
+		}
 		_saveData.Set(0x28C0, Reader.TypeToByte(save3, exportBe));
 
 		bool to = !AlternateChecksum;
@@ -860,25 +875,74 @@ internal class File /* format */ {
 					int noteSize = 8;
 					if (i * noteSize >= expectedSize)
 						break;
+					ushort unk_02 = GetVal<ushort>(note, "unk_02"); // 16-bit length
 					result[i * noteSize + 0] = GetVal<byte>(note, "noteIdx");
-					result[i * noteSize + 1] = GetVal<byte>(note, "unk_01");
-					result[i * noteSize + 2] = GetVal<byte>(note, "unk_02");
-					result[i * noteSize + 3] = GetVal<byte>(note, "volume");
-					result[i * noteSize + 4] = GetVal<byte>(note, "vibrato");
-					result[i * noteSize + 5] = GetVal<byte>(note, "tone");
-					result[i * noteSize + 6] = GetVal<byte>(note, "semitone");
-					result[i * noteSize + 7] = 0; // Padding
+					result[i * noteSize + 1] = GetVal<byte>(note, "unk_01"); // Padding
+					result[i * noteSize + 2] = (byte)(unk_02 >> 8); // length_msb
+					result[i * noteSize + 3] = (byte)(unk_02 & 0xFF); // length_lsb
+					result[i * noteSize + 4] = GetVal<byte>(note, "volume");
+					result[i * noteSize + 5] = GetVal<byte>(note, "vibrato");
+					result[i * noteSize + 6] = GetVal<byte>(note, "tone"); // bend
+					result[i * noteSize + 7] = GetVal<byte>(note, "semitone"); // bFlat4Flag
 				} else {
 					if (i >= expectedSize)
 						break;
+					byte b = 0;
 					try {
-						result[i] = (byte)System.Convert.ChangeType(list[i], typeof(byte));
+						b = (byte)System.Convert.ChangeType(list[i], typeof(byte));
 					} catch {
-						result[i] = 0;
+						b = 0;
+					}
+					int mod = i % 8;
+					if (mod == 2) {
+						if (i + 1 < expectedSize)
+							result[i + 1] = b;
+					} else if (mod == 3) {
+						result[i - 1] = b;
+					} else {
+						result[i] = b;
 					}
 				}
 			}
 		}
 		return result;
+	}
+
+	private static string? GetScarecrowSongString(byte setFlag, byte[]? songBytes) {
+		if (setFlag == 0 || songBytes == null || songBytes.Length < 128)
+			return null;
+
+		var songList = new List<string>();
+		for (int i = 0; i < 16; i++) {
+			byte noteIdx = songBytes[i * 8];
+			if (noteIdx == 0xFF)
+				continue;
+
+			string btn = noteIdx switch {
+				0 or 1 or 2 or 3 => "Ⓐ",
+				4 or 5 or 6 => "▾",
+				7 or 8 or 9 => "▸",
+				10 or 11 or 12 => "◂",
+				13 or 14 or 15 => "▴",
+				_ => "?"
+			};
+			songList.Add(btn);
+			if (songList.Count >= 8)
+				break;
+		}
+
+		if (songList.Count == 0)
+			return null;
+
+		return string.Join(" ", songList.ToArray());
+	}
+
+	private static void SwapSongLengths(byte[]? songBytes) {
+		if (songBytes == null) return;
+		for (int i = 0; i < songBytes.Length / 8; i++) {
+			byte temp = songBytes[i * 8 + 2];
+			songBytes[i * 8 + 2] = songBytes[i * 8 + 3];
+			songBytes[i * 8 + 3] = temp;
+		}
 	}
 }

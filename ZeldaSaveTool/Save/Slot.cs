@@ -6,5 +6,6 @@ public struct Slot {
 	public short HeartsTotal { get; set; }
 	public short HeartsCount { get; set; }
 	public bool DoubleDefense { get; set; }
+	public string? ScarecrowSong { get; set; }
 	//public bool IsMQ { get; set; } // For JSON .sav SoH only?
 }
