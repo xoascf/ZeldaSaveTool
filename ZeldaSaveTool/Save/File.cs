@@ -238,19 +238,79 @@ internal class File /* format */ {
 		if (data.Length < GCIMinFileSize)
 			throw new(T("Wrong_Size"));
 
-		byte[] newData = new byte[MaxSize];
-		int[] tailToSkip = { 0, 0x4, 0x0 };
-		int offset = GCISaveOffset;
+		List<SramCandidate> candidates = new();
 
-		Array.Copy(data, offset, newData, 0, 0x20);
-		offset += 0x20;
+		for (int i = 0; i < data.Length - GCISaveLength - 8; i += 4) {
+			byte[] fourBytes = data.Get(i, 4);
+			ByteOrder type = Convert.Identify(fourBytes, Convert.SaveMagic);
+			if (type == ByteOrder.Unknown) continue;
+			if (!CheckZeldazPattern(data, i, type)) continue;
 
-		for (int i = 0; i < 3; ++i) {
-			Array.Copy(data, offset, newData, 0x20 + i * 0x1450, 0x1450);
-			offset += 0x1450 + tailToSkip[i];
+			int start = i - 0x3C;
+			if (start < 0 || start + GCISaveLength > data.Length) continue;
+
+			byte[] newData = new byte[MaxSize];
+			int[] tailToSkip = { 0, 0x4, 0x0 };
+			int offset = start;
+
+			Array.Copy(data, offset, newData, 0, 0x20);
+			offset += 0x20;
+
+			for (int j = 0; j < 3; ++j) {
+				Array.Copy(data, offset, newData, 0x20 + j * 0x1450, 0x1450);
+				offset += 0x1450 + tailToSkip[j];
+			}
+
+			byte[] converted = newData.ToBigEndian(type);
+
+			int slot2ZeldOffset = i + 0x1450;
+			bool isMultiSlot = false;
+			if (slot2ZeldOffset + 4 < data.Length) {
+				byte[] slot2Bytes = data.Get(slot2ZeldOffset, 4);
+				ByteOrder slot2Type = Convert.Identify(slot2Bytes, Convert.SaveMagic);
+				if (slot2Type == type) isMultiSlot = true;
+			}
+
+			bool isDuplicate = false;
+			foreach (SramCandidate existing in candidates) {
+				if (existing.Data.Matches(converted)) {
+					isDuplicate = true;
+					break;
+				}
+			}
+
+			if (!isDuplicate)
+				candidates.Add(new SramCandidate { Data = converted, IsMultiSlot = isMultiSlot });
+
+			if (isMultiSlot)
+				i += 0x1450 * 5;
 		}
 
-		data = newData.ToBigEndian();
+		if (candidates.Count == 0) {
+			byte[] newData = new byte[MaxSize];
+			int[] tailToSkip = { 0, 0x4, 0x0 };
+			int offset = GCISaveOffset;
+
+			Array.Copy(data, offset, newData, 0, 0x20);
+			offset += 0x20;
+
+			for (int i = 0; i < 3; ++i) {
+				Array.Copy(data, offset, newData, 0x20 + i * 0x1450, 0x1450);
+				offset += 0x1450 + tailToSkip[i];
+			}
+
+			data = newData.ToBigEndian();
+			return;
+		}
+
+		candidates.Reverse();
+
+		if (candidates.Count == 1) {
+			data = candidates[0].Data;
+			return;
+		}
+
+		data = PromptSramSelection(candidates).Data;
 	}
 
 	public static void GetN64FromSRM(ref byte[] data) {
